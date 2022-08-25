@@ -1,5 +1,5 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Re
+import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Names from '../utils/constants/componentNames';
 import Auth from './authStack';

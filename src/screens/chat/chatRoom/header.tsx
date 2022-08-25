@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import LocalImages from '../../../utils/constants/localImages';
 import {vh, vw} from '../../../utils/Dimension';
@@ -7,20 +7,32 @@ import DefaultValues from '../../../utils/constants/defaultValues';
 import Fonts from '../../../utils/constants/fonts';
 import Color from '../../../utils/constants/color';
 import Strings from '../../../utils/constants/strings';
-import {useSelector} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
 
 interface Props {
   title?: string;
   image?: any;
   style?: Object;
+  receiverId: string;
 }
 
 export default function Header(props: Props) {
   const navigation = useNavigation();
-  const {online} = useSelector((state: any) => state.authReducer);
+  const [online, setOnline] = useState(false);
   const onBackPress = () => {
     navigation.goBack();
   };
+
+  useEffect(() => {
+    const activeListener = firestore()
+      .collection('Users')
+      .doc(props?.receiverId)
+      .onSnapshot(documentSnapshot => {
+        setOnline(documentSnapshot.data()?.online);
+      });
+
+    return () => activeListener();
+  });
 
   return (
     <View style={[styles.container, props?.style]}>

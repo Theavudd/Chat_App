@@ -10,8 +10,8 @@ import BackHeader from '../../../components/backHeader';
 
 export default function ContactList() {
   const dispatch = useDispatch();
-  const {uid} = useSelector((state: any) => state.authReducer);
-  const {users} = useSelector((state: any) => state.chatReducer);
+  const {uid, inbox} = useSelector((state: any) => state.authReducer);
+  // const {users} = useSelector((state: any) => state.);
   const navigation = useNavigation<any>();
   useEffect(() => {
     const subscriber = firestore()
@@ -32,11 +32,11 @@ export default function ContactList() {
             .get();
           return {
             data: item.data(),
-            lastMessage: temp.docs[temp.docs.length - 1],
           };
         });
         Promise.all(userDetails).then((response: any) => {
-          dispatch({type: 'Chat/updateUsers', payload: response});
+          console.log('res', response);
+          dispatch({type: 'Auth/updateUsers', payload: response});
         });
       });
     return () => subscriber();
@@ -90,7 +90,7 @@ export default function ContactList() {
     <View>
       <BackHeader title={'ContactList'} />
       <FlatList
-        data={users}
+        data={inbox}
         renderItem={renderUsers}
         keyExtractor={item => {
           return item.data.id;

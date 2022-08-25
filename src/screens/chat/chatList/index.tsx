@@ -29,45 +29,33 @@ function ChatList() {
   const dispatch = useDispatch<any>();
   const {uid, online} = useSelector((state: any) => state.authReducer);
   const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   useEffect(() => {
+    updateOnlineStatus();
     const subscription = AppState.addEventListener('change', nextAppState => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        console.log('App has come to the foreground!');
-      }
-
+      console.log('insideAppstate');
       appState.current = nextAppState;
-      setAppStateVisible(appState.current);
-      console.log('AppState', appState.current);
+      updateOnlineStatus();
+      console.log('activeState', appState.current);
     });
-
     return () => {
       subscription.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const _handleAppStateChange = (nextAppState: any) => {
-    console.log('insideAppstate');
-    if (
-      appState.current.match(/inactive|background/) &&
-      nextAppState === 'active'
-    ) {
-      firestore()
-        .collection('Users')
-        .doc(uid)
-        .update({online: true})
-        .then(() => {
-          console.log('online', online);
-          dispatch({type: ActionTypeName.setOnlineStatus, payload: true});
+
+  const updateOnlineStatus = () => {
+    firestore()
+      .collection('Users')
+      .doc(uid)
+      .update({online: appState.current === 'active' ? true : false})
+      .then(() => {
+        console.log('online', online);
+        dispatch({
+          type: ActionTypeName.setOnlineStatus,
+          payload: appState.current === 'active' ? true : false,
         });
-    }
-    appState.current = nextAppState;
-    setAppStateVisible(appState.current);
-    console.log('AppState', appState.current);
+      });
   };
 
   const onSignOutPress = () => {

@@ -20,7 +20,7 @@ import {vh, vw} from '../../../utils/Dimension';
 import Color from '../../../utils/constants/color';
 
 export default function ChatRoom() {
-  const {roomid, recieverName}: any = useRoute().params;
+  const {roomid, recieverName, receiverId}: any = useRoute().params;
   const dispatch = useDispatch<any>();
   const {chat} = useSelector((state: any) => state.chatReducer);
   const {uid, name} = useSelector((state: any) => state.authReducer);
@@ -38,6 +38,18 @@ export default function ChatRoom() {
           tempArray = tempArray.sort(
             (a: any, b: any) => b.createdAt - a.createdAt,
           );
+          if (tempArray.length === 0) {
+            firestore()
+              .collection('Users')
+              .doc(uid)
+              .collection('Inbox')
+              .doc(receiverId)
+              .set({
+                Name: recieverName,
+                userId: receiverId,
+                roomid: roomid,
+              });
+          }
           dispatch({
             type: 'Chat/updateChat',
             payload: {roomid, data: tempArray},
@@ -143,6 +155,7 @@ export default function ChatRoom() {
     <View style={styles.container}>
       <Header
         title={recieverName}
+        receiverId={receiverId}
         image={'e'}
         style={[
           styles.chatHeader,

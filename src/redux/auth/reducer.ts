@@ -7,7 +7,7 @@ const initialState = {
   name: '',
   image: '',
   inbox: [],
-  online: null,
+  online: false,
 };
 
 const AuthSlice = createSlice({
@@ -28,6 +28,7 @@ const AuthSlice = createSlice({
       state.phoneNo = initialState.phoneNo;
       state.image = initialState.image;
       state.name = initialState.name;
+      state.online = false;
     },
     StoreImage: (state: any, action) => {
       state.image = action.payload;
@@ -36,7 +37,6 @@ const AuthSlice = createSlice({
       state.name = action.payload;
     },
     setOnlineStatus: (state: any, action) => {
-      console.log('payload', action.payload);
       state.online = action.payload;
     },
     updateUsers: (state: any, action: any) => {
