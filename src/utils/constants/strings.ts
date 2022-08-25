@@ -1,0 +1,25 @@
+const Strings = {
+  next: 'Next',
+  inbox: 'Inbox',
+  users: 'Users',
+  chats: 'Chats',
+  online: 'Online',
+  signOut: 'Signout',
+  search: 'Search...',
+  appname: 'SwipeText',
+  updateImage: 'Update',
+  removeImage: 'Remove',
+  addImage: 'Add Image',
+  chatRooms: 'Chatrooms',
+  enterName: 'Enter Name',
+  addDetails: 'Add Details',
+  enterText: 'Enter Message',
+  Resend_Code: 'Resend Code',
+  contactList: 'Contact List',
+  enterSMSCode: 'Enter SMS Code',
+  imageCancel: 'Image Selection Cancelled',
+  welcomeToWhatsapp: 'Welcome To Whatsapp',
+  phoneNumberError: 'Phone Number must be 10 digit long',
+};
+
+export default Strings;

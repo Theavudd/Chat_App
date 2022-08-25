@@ -1,0 +1,69 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/Geometria-Bold.ttf",
+      "sha1": "1c6c2bfcd359c9d324fe2556621f757c1a3cf20f"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-BoldItalic.ttf",
+      "sha1": "f7334c6e95abc27bb87cbfbb760852ef8a31da42"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-ExtraBold.ttf",
+      "sha1": "7e05f586200fd8c6f9803f2b63c1b7c526907e0c"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-ExtraBoldItalic.ttf",
+      "sha1": "666c2698ad3fd1e547e2219fc093fb2ea4647429"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-ExtraLight.ttf",
+      "sha1": "6980a6297df4345ad27dde4a93b596a27b411163"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-ExtraLightItalic.ttf",
+      "sha1": "1bc431c0c5c1ee0bf995f0783ae46eba6fdcb272"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-Heavy.ttf",
+      "sha1": "01cff2d0b467525947ee0a61a4ceab8b1a962245"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-HeavyItalic.ttf",
+      "sha1": "f900fb50792d811f21a3178d902b0e43482fc464"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-Italic.ttf",
+      "sha1": "46deda43be0e21d5d1c30ec5e446a6f00c1bd154"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-Light.ttf",
+      "sha1": "7034de7668e613b850d98f37bdb7c0c629445f08"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-LightItalic.ttf",
+      "sha1": "7ebb897bb8edcba5b0f559daa0f9b022e9eb38d0"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-Medium.ttf",
+      "sha1": "e3ff5faaf2225ad77d4242f5291f952486af3dfa"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-MediumItalic.ttf",
+      "sha1": "7c89c219119cfac6ab545d6b5fd283642c2eed84"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-Thin.ttf",
+      "sha1": "74f6933b5cdfc9f4edfcdc21605e7bd37b0edd45"
+    },
+    {
+      "path": "src/assets/fonts/Geometria-ThinItalic.ttf",
+      "sha1": "98a0af8b906cdc465782399b8f745d8951d7cfa9"
+    },
+    {
+      "path": "src/assets/fonts/Geometria.ttf",
+      "sha1": "69a52c78499c5991856971a83a76ede7fa062abc"
+    }
+  ]
+}
