@@ -6,6 +6,7 @@ import Fonts from '../../../utils/constants/fonts';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Color.black,
   },
   innerContainer: {
     flex: 1,
@@ -25,7 +26,7 @@ export const styles = StyleSheet.create({
   logoText: {
     marginTop: vh(35),
     fontSize: vw(24),
-    color: Color.black,
+    color: Color.white,
     fontFamily: Fonts.Medium,
   },
   numberView: {
@@ -56,7 +57,7 @@ export const styles = StyleSheet.create({
     width: vw(15),
     height: vh(45),
     borderWidth: 0,
-    color: Color.black,
+    color: Color.white,
   },
 
   underlineStyleHighLighted: {
@@ -76,37 +77,41 @@ export const styles = StyleSheet.create({
   phoneNumberText: {
     fontSize: vw(16),
     fontFamily: Fonts.Regular,
-    color: Color.black,
+    color: Color.white,
     marginTop: vh(20),
   },
   verify: {
     fontSize: vw(16),
     fontFamily: Fonts.Medium,
-    color: Color.black,
+    color: Color.white,
   },
   resendBtn: {
-    fontWeight: '600',
+    alignSelf: 'center',
+  },
+  resendBtnText: {
+    fontFamily: Fonts.Bold,
     color: Color.green,
   },
   resendContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignSelf: 'center',
-    marginRight: vw(70),
+    justifyContent: 'center',
+    width: vw(100),
     alignItems: 'center',
   },
   timer: {
     flexDirection: 'row',
+    alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'center',
   },
   clockIcon: {
-    height: vh(17),
-    width: vw(17),
+    height: vh(15),
+    width: vw(15),
     marginRight: vw(5),
+    tintColor: Color.white,
   },
   clockText: {
-    color: Color.red,
+    color: Color.white,
     fontSize: vw(14),
   },
 });

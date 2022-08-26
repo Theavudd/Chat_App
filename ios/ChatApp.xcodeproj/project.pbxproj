@@ -9,11 +9,11 @@
 /* Begin PBXBuildFile section */
 		007493E1F39743BCB654A25D /* Geometria-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE139A3539A34207866B730B /* Geometria-Light.ttf */; };
 		00E356F31AD99517003FC87E /* ChatAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ChatAppTests.m */; };
-		0C274F3828A48FE300C06229 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0C274F3728A48FE300C06229 /* GoogleService-Info.plist */; };
-		0C7734D3316B36AAD3BA7A7A /* libPods-ChatApp-ChatAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A044BD80928278D927F0F94 /* libPods-ChatApp-ChatAppTests.a */; };
+		0CCF1E3428B7981400AA7C57 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0CCF1E3328B7981400AA7C57 /* GoogleService-Info.plist */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		18A217E68A13FED767974F2E /* Pods_ChatApp_ChatAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DA5EBC619C66480CAEE5656 /* Pods_ChatApp_ChatAppTests.framework */; };
 		2BE0AA6C0BD4407B9010DA73 /* Geometria-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1284F7C32C394104B27A8801 /* Geometria-Heavy.ttf */; };
 		4300566EB7404B2FAA78A3F2 /* Geometria-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18287823BCC542A5A84425D2 /* Geometria-MediumItalic.ttf */; };
 		45603417EAEF4937A4EC4541 /* Geometria-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BEA2F390BC424D12ABEC66A4 /* Geometria-ThinItalic.ttf */; };
@@ -22,10 +22,10 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		940E8801391F4C8C90FAEECC /* Geometria-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2EF37B5A307B485685109C8C /* Geometria-BoldItalic.ttf */; };
 		A3926B6911DC4CDF83C97B14 /* Geometria-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 689A6079C7DD4F38B87621B8 /* Geometria-ExtraLight.ttf */; };
+		B6245E635C7B56A86E77754A /* Pods_ChatApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20CCB7973FE9EDD03F16A8BE /* Pods_ChatApp.framework */; };
 		B7DD08359F1D4471AAF61D05 /* Geometria-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E77B6D58D854395907EEE0E /* Geometria-LightItalic.ttf */; };
 		BA4361BE2BA54A9F9A422647 /* Geometria-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 095B32CF4D18435EBA68DD67 /* Geometria-Thin.ttf */; };
 		BB161EC1FC0444D38AAE728F /* Geometria-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8D80D5B79D88481ABFDE180C /* Geometria-ExtraBoldItalic.ttf */; };
-		BC43C3C01027AEAEEF4E45A6 /* libPods-ChatApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 433D99E41697EBCB5C6A5935 /* libPods-ChatApp.a */; };
 		BF5F9AC57D8441798FDA1509 /* Geometria-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 378917C0C03944709F6F3FDE /* Geometria-Medium.ttf */; };
 		C683BD14A4C7408C9E0CC943 /* Geometria-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C02BA811324949838AE8E623 /* Geometria-ExtraLightItalic.ttf */; };
 		CB22A8C5EB944507BF09677A /* Geometria-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3A4CBDAAD0F84CB2B64F5B52 /* Geometria-Italic.ttf */; };
@@ -48,7 +48,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ChatAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatAppTests.m; sourceTree = "<group>"; };
 		095B32CF4D18435EBA68DD67 /* Geometria-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-Thin.ttf"; path = "../src/assets/fonts/Geometria-Thin.ttf"; sourceTree = "<group>"; };
-		0C274F3728A48FE300C06229 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		0CCF1E3328B7981400AA7C57 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0E77B6D58D854395907EEE0E /* Geometria-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-LightItalic.ttf"; path = "../src/assets/fonts/Geometria-LightItalic.ttf"; sourceTree = "<group>"; };
 		1284F7C32C394104B27A8801 /* Geometria-Heavy.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-Heavy.ttf"; path = "../src/assets/fonts/Geometria-Heavy.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -59,14 +59,14 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ChatApp/main.m; sourceTree = "<group>"; };
 		18287823BCC542A5A84425D2 /* Geometria-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-MediumItalic.ttf"; path = "../src/assets/fonts/Geometria-MediumItalic.ttf"; sourceTree = "<group>"; };
 		1FA718D2A9AD95C671293F3A /* Pods-ChatApp-ChatAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApp-ChatAppTests.debug.xcconfig"; path = "Target Support Files/Pods-ChatApp-ChatAppTests/Pods-ChatApp-ChatAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		20CCB7973FE9EDD03F16A8BE /* Pods_ChatApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EF37B5A307B485685109C8C /* Geometria-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-BoldItalic.ttf"; path = "../src/assets/fonts/Geometria-BoldItalic.ttf"; sourceTree = "<group>"; };
 		378917C0C03944709F6F3FDE /* Geometria-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-Medium.ttf"; path = "../src/assets/fonts/Geometria-Medium.ttf"; sourceTree = "<group>"; };
 		3A4CBDAAD0F84CB2B64F5B52 /* Geometria-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-Italic.ttf"; path = "../src/assets/fonts/Geometria-Italic.ttf"; sourceTree = "<group>"; };
-		433D99E41697EBCB5C6A5935 /* libPods-ChatApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ChatApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		4A044BD80928278D927F0F94 /* libPods-ChatApp-ChatAppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ChatApp-ChatAppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FFF5306047309815A990172 /* Pods-ChatApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApp.debug.xcconfig"; path = "Target Support Files/Pods-ChatApp/Pods-ChatApp.debug.xcconfig"; sourceTree = "<group>"; };
 		5060C849E9FE41C388E1AAE7 /* Geometria-HeavyItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-HeavyItalic.ttf"; path = "../src/assets/fonts/Geometria-HeavyItalic.ttf"; sourceTree = "<group>"; };
 		689A6079C7DD4F38B87621B8 /* Geometria-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-ExtraLight.ttf"; path = "../src/assets/fonts/Geometria-ExtraLight.ttf"; sourceTree = "<group>"; };
+		6DA5EBC619C66480CAEE5656 /* Pods_ChatApp_ChatAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatApp_ChatAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7238F9000A604FAE8BBD005D /* Geometria.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Geometria.ttf; path = ../src/assets/fonts/Geometria.ttf; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ChatApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8D80D5B79D88481ABFDE180C /* Geometria-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/Geometria-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -85,7 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C7734D3316B36AAD3BA7A7A /* libPods-ChatApp-ChatAppTests.a in Frameworks */,
+				18A217E68A13FED767974F2E /* Pods_ChatApp_ChatAppTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,7 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC43C3C01027AEAEEF4E45A6 /* libPods-ChatApp.a in Frameworks */,
+				B6245E635C7B56A86E77754A /* Pods_ChatApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,8 +134,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				433D99E41697EBCB5C6A5935 /* libPods-ChatApp.a */,
-				4A044BD80928278D927F0F94 /* libPods-ChatApp-ChatAppTests.a */,
+				20CCB7973FE9EDD03F16A8BE /* Pods_ChatApp.framework */,
+				6DA5EBC619C66480CAEE5656 /* Pods_ChatApp_ChatAppTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -150,7 +150,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				0C274F3728A48FE300C06229 /* GoogleService-Info.plist */,
+				0CCF1E3328B7981400AA7C57 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* ChatApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ChatAppTests */,
@@ -218,7 +218,6 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				F16C5B9DC83F56373D144E60 /* [CP] Embed Pods Frameworks */,
 				6D749BAFEEC88BFA5799538E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -241,7 +240,6 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				BA078D0BFE50D6DB5B4E8A99 /* [CP] Embed Pods Frameworks */,
 				78513DB41468D40C56C7A707 /* [CP] Copy Pods Resources */,
 				AC495E8BB16E81CCB93944EA /* [CP-User] [RNFB] Core Configuration */,
 			);
@@ -313,7 +311,7 @@
 				2BE0AA6C0BD4407B9010DA73 /* Geometria-Heavy.ttf in Resources */,
 				7BB41300A25D4285BCB5E162 /* Geometria-HeavyItalic.ttf in Resources */,
 				CB22A8C5EB944507BF09677A /* Geometria-Italic.ttf in Resources */,
-				0C274F3828A48FE300C06229 /* GoogleService-Info.plist in Resources */,
+				0CCF1E3428B7981400AA7C57 /* GoogleService-Info.plist in Resources */,
 				007493E1F39743BCB654A25D /* Geometria-Light.ttf in Resources */,
 				B7DD08359F1D4471AAF61D05 /* Geometria-LightItalic.ttf in Resources */,
 				BF5F9AC57D8441798FDA1509 /* Geometria-Medium.ttf in Resources */,
@@ -432,40 +430,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BA078D0BFE50D6DB5B4E8A99 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ChatApp/Pods-ChatApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ChatApp/Pods-ChatApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ChatApp/Pods-ChatApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F16C5B9DC83F56373D144E60 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ChatApp-ChatAppTests/Pods-ChatApp-ChatAppTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ChatApp-ChatAppTests/Pods-ChatApp-ChatAppTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ChatApp-ChatAppTests/Pods-ChatApp-ChatAppTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {

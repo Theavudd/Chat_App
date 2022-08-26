@@ -1,5 +1,6 @@
 const LocalImages = {
   logo: require('../../assets/images/Logo.png'),
+  clock: require('../../assets/images/clock.png'),
   options: require('../../assets/images/options.png'),
   backbutton: require('../../assets/images/back.png'),
   message: require('../../assets/images/message.png'),
