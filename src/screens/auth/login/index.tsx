@@ -9,7 +9,7 @@ import Color from '../../../utils/constants/color';
 import {vh} from '../../../utils/Dimension';
 import {useNavigation} from '@react-navigation/native';
 import Names from '../../../utils/constants/componentNames';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {login} from '../../../redux/auth/action';
 import Loader from '../../../components/loader';
 import {showSnackBar} from '../../../utils/CommonFunctions';
@@ -18,12 +18,9 @@ export default function Login() {
   const navigation = useNavigation<any>();
   const [phoneNo, setPhoneNo] = useState<string>('');
   const [countryCode, setCountryCode] = useState<string>('+91');
-  const store = useSelector(state => state);
   const dispatch = useDispatch<any>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [errorMsg, setError] = useState(false);
-
-  console.log('state', store);
 
   const signIn = () => {
     if (phoneNo.length === 10) {

@@ -14,8 +14,7 @@ export default function Auth() {
     <AuthStack.Navigator
       screenOptions={{headerShown: false}}
       initialRouteName={
-        // name === '' ? (uid === '' ? Names.Login : Names.Signup) : Names.Login
-        Names.OTP
+        name === '' ? (uid === '' ? Names.Login : Names.Signup) : Names.Login
       }>
       <AuthStack.Screen name={Names.Login} component={Login} />
       <AuthStack.Screen name={Names.OTP} component={OTP} />

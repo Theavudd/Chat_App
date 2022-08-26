@@ -6,7 +6,7 @@ import Fonts from '../../../utils/constants/fonts';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    tintColor: Color.darkGrey,
+    backgroundColor: Color.black,
   },
   innerContainer: {
     flex: 1,
@@ -24,13 +24,13 @@ export const styles = StyleSheet.create({
   },
   logoImg: {},
   logoText: {
-    color: Color.black,
+    color: Color.white,
     marginTop: vh(35),
     fontSize: vw(24),
     fontFamily: Fonts.Medium,
   },
   numberView: {
-    backgroundColor: Color.lightGrey,
+    backgroundColor: Color.darkGrey,
     marginHorizontal: vw(40),
     borderRadius: vh(10),
     flexDirection: 'row',
@@ -41,6 +41,7 @@ export const styles = StyleSheet.create({
   numberTextInput: {
     width: vw(200),
     height: vh(45),
+    color: Color.white,
     paddingHorizontal: vw(5),
   },
   countryCode: {
@@ -60,7 +61,7 @@ export const styles = StyleSheet.create({
     width: vw(15),
     height: vh(45),
     borderWidth: 0,
-    color: Color.black,
+    color: Color.white,
   },
 
   underlineStyleHighLighted: {

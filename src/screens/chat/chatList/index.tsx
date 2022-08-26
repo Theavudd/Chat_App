@@ -13,7 +13,7 @@ import {styles} from './styles';
 import CommonFunctions, {showSnackBar} from '../../../utils/CommonFunctions';
 import {useDispatch, useSelector} from 'react-redux';
 import ComponentNames from '../../../utils/constants/componentNames';
-import {CommonActions, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {signOut} from '../../../redux/chat/action';
 import DefaultValues from '../../../utils/constants/defaultValues';
 import Loader from '../../../components/loader';
@@ -27,16 +27,14 @@ function ChatList() {
   const navigation = useNavigation<any>();
   const {name} = useSelector((state: any) => state.authReducer);
   const dispatch = useDispatch<any>();
-  const {uid, online} = useSelector((state: any) => state.authReducer);
+  const {uid} = useSelector((state: any) => state.authReducer);
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
     updateOnlineStatus();
     const subscription = AppState.addEventListener('change', nextAppState => {
-      console.log('insideAppstate');
       appState.current = nextAppState;
       updateOnlineStatus();
-      console.log('activeState', appState.current);
     });
     return () => {
       subscription.remove();
@@ -50,7 +48,6 @@ function ChatList() {
       .doc(uid)
       .update({online: appState.current === 'active' ? true : false})
       .then(() => {
-        console.log('online', online);
         dispatch({
           type: ActionTypeName.setOnlineStatus,
           payload: appState.current === 'active' ? true : false,
@@ -64,12 +61,13 @@ function ChatList() {
       () => {
         setLoading(false);
         dispatch(signOut());
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: ComponentNames.Auth}],
-          }),
-        );
+        firestore().collection('Users').doc(uid).update({
+          online: false,
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{name: ComponentNames.Auth}],
+        });
       },
       (error: any) => {
         setLoading(false);

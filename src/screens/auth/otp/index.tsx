@@ -14,7 +14,7 @@ import OTPInputView from '@twotalltotems/react-native-otp-input';
 import Button from '../../../components/button';
 import Color from '../../../utils/constants/color';
 import {vh} from '../../../utils/Dimension';
-import {CommonActions, useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import Loader from '../../../components/loader';
 import Names from '../../../utils/constants/componentNames';
@@ -26,7 +26,9 @@ import ActionTypeName from '../../../utils/actionTypeName';
 
 export default function OTP() {
   const navigation = useNavigation<any>();
-  const {countryCode, phoneNo} = useSelector((state: any) => state.authReducer);
+  const {countryCode, phoneNo, uid} = useSelector(
+    (state: any) => state.authReducer,
+  );
   const routes = useRoute<any>();
   const [otp, setOTP] = useState('');
   const [secondsLeft, setSecondsLeft] = useState(60);
@@ -85,7 +87,7 @@ export default function OTP() {
           firestore()
             .collection('Users')
             .doc(userDetails?.user?._user?.uid)
-            .set({
+            .update({
               id: userDetails?.user?._user?.uid,
               countryCode: countryCode,
               phoneNo: phoneNo,
@@ -98,17 +100,27 @@ export default function OTP() {
             });
           firestore()
             .collection('Users')
-            .doc(userDetails?.user?._user?.uid)
+            .doc(uid)
             .onSnapshot(documentSnapshot => {
-              let data = documentSnapshot.data();
-              if (data?.hasOwnProperty('Name')) {
-                dispatch({type: ActionTypeName.storeName, payload: data.Name});
-                navigation.dispatch(
-                  CommonActions.reset({
-                    index: 0,
-                    routes: [{name: Names.Chat}],
-                  }),
+              console.log(
+                'documentSnapshot.data()?.Name,',
+                documentSnapshot?.data()?.Name,
+              );
+              console.log('dsadasd', documentSnapshot.data());
+              if (documentSnapshot.data()?.hasOwnProperty('Name')) {
+                console.log(
+                  'documentSnapshot.data()?.Name,',
+                  documentSnapshot?.data()?.Name,
                 );
+                console.log('dsadasd', documentSnapshot.data());
+                dispatch({
+                  type: ActionTypeName.storeName,
+                  payload: documentSnapshot?.data()?.Name,
+                });
+                navigation.reset({
+                  index: 0,
+                  routes: [{name: Names.Chat}],
+                });
               } else {
                 navigation.navigate(Names.Signup);
               }
@@ -200,30 +212,27 @@ export default function OTP() {
   const renderTimer = () => {
     return (
       <View style={styles.resendContainer}>
-        <TouchableOpacity
-          disabled={!enableReset}
-          activeOpacity={0.8}
-          onPress={onResetPress}>
-          <Text
-            style={[
-              styles.resendBtn,
-              {
-                color: enableReset ? Color.green : Color.grey,
-              },
-            ]}>
-            {Strings.Resend_Code}
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.timer}>
-          {/* <Image
-              source={LocalImages.clockIcon}
+        {secondsLeft === 0 && (
+          <TouchableOpacity
+            disabled={!enableReset}
+            activeOpacity={0.8}
+            style={styles.resendBtn}
+            onPress={onResetPress}>
+            <Text style={[styles.resendBtnText]}>{Strings.Resend_Code}</Text>
+          </TouchableOpacity>
+        )}
+        {secondsLeft !== 0 && (
+          <View style={styles.timer}>
+            <Image
+              source={LocalImages.clock}
               style={styles.clockIcon}
               resizeMode={'contain'}
-            /> */}
-          <Text style={styles.clockText}>
-            {clockify().displayMinute + ':' + clockify().displaySeconds}
-          </Text>
-        </View>
+            />
+            <Text style={styles.clockText}>
+              {clockify().displayMinute + ':' + clockify().displaySeconds}
+            </Text>
+          </View>
+        )}
       </View>
     );
   };
