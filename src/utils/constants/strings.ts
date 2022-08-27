@@ -1,12 +1,12 @@
 const Strings = {
   next: 'Next',
-  inbox: 'Inbox',
   users: 'Users',
   chats: 'Chats',
   online: 'Online',
   signOut: 'Signout',
   search: 'Search...',
   appname: 'SwipeText',
+  inbox: 'RecentChats',
   updateImage: 'Update',
   removeImage: 'Remove',
   addImage: 'Add Image',

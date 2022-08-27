@@ -4,7 +4,59 @@ import Color from './constants/color';
 import firestore from '@react-native-firebase/firestore';
 
 /**
- * @function sign
+ * @description Function to get Set Inbox
+ * @param uid
+ * @param id
+ * @param payload
+ */
+
+const updateInbox = (uid: string, id: string, payload: any) => {
+  firestore()
+    .collection('Users')
+    .doc(uid)
+    .collection('Inbox')
+    .doc(id)
+    .update(payload)
+    .then(() => {})
+    .catch((error: any) => showSnackBar(error.message));
+};
+/**
+ * @description Function to get Set Inbox
+ * @param uid
+ * @param id
+ * @param payload
+ */
+
+const setInbox = (uid: string, id: string, payload: any) => {
+  firestore()
+    .collection('Users')
+    .doc(uid)
+    .collection('Inbox')
+    .doc(id)
+    .set(payload)
+    .then(() => {})
+    .catch((error: any) => showSnackBar(error.message));
+};
+
+/**
+ * @description Function to get Chat Snapshot
+ * @param roomid
+ * @param successCallback
+ */
+const getChatSnapshot = (roomid: string, successCallback: Function) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .onSnapshot(documentSnapshot => {
+      successCallback(documentSnapshot);
+    });
+};
+
+/**
+ * @function signOutWithFirebase
+ * @param {*} successCallback
+ * @param {*} failureCallback
  */
 const signOutWithFirebase = (
   successCallback: Function,
@@ -83,39 +135,40 @@ export const showSnackBar = (message: string) => {
 };
 
 /**
- * @function addMsg
- * @description function to add messages to firestore
- * @param payload
- * @param successCallback
- * @param failureCallback
+ * @description Function to get User's Typing Status
+ * @param roomid
+ * @param id
  */
 
-export const addMessage = (
-  payload: any,
+const getTypingStatus = (roomid: string, id: string) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('TypingStatus')
+    .doc(id)
+    .onSnapshot(documentSnapshot => {
+      if (documentSnapshot) {
+        console.log('typing', documentSnapshot.data());
+      }
+    });
+};
+
+const setTypingStatus = (
+  roomid: string,
+  uid: string,
+  payload: boolean,
   successCallback: Function,
-  failureCallback: Function,
 ) => {
   firestore()
     .collection('Chats')
-    .doc(payload.roomid)
-    .collection(payload.roomid)
-    .add(payload)
-    .then(response => {
-      console.log('response', response);
-      // firestore()
-      //   .collection('Chats')
-      //   .doc(payload.roomid)
-      //   .collection(payload.roomid)
-      //   .doc(
-      //     response?._documentPath?.parts()[
-      //       response?.documentPath()?.parts().length - 1
-      //     ],
-      //   );
-      successCallback(response);
+    .doc(roomid)
+    .collection('TypingStatus')
+    .doc(uid)
+    .set({isTyping: payload})
+    .then(() => {
+      successCallback();
     })
-    .catch((error: any) => {
-      failureCallback(error);
-    });
+    .catch(err => showSnackBar(err.message));
 };
 
 /**
@@ -126,5 +179,9 @@ export default {
   signOutWithFirebase,
   signInWithPhoneNumber,
   confirmCode,
-  addMessage,
+  updateInbox,
+  setInbox,
+  getChatSnapshot,
+  getTypingStatus,
+  setTypingStatus,
 };

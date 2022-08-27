@@ -45,12 +45,12 @@ export default function Header(props: Props) {
           resizeMode={'contain'}
           style={styles.backButtonImg}
         />
-        {props.image && (
-          <Image
-            source={{uri: 'https://placeimg.com/140/140/any'}}
-            style={styles.profileImg}
-          />
-        )}
+        <Image
+          source={{
+            uri: props.image !== '' ? props.image : DefaultValues.defaultImage,
+          }}
+          style={styles.profileImg}
+        />
       </TouchableOpacity>
       <View style={styles.nameContainer}>
         <Text style={styles.titleText}>{props?.title}</Text>
@@ -106,8 +106,8 @@ const styles = StyleSheet.create({
     lineHeight: vh(18),
     fontFamily: Fonts.Regular,
     color: Color.white,
-    marginRight: vw(40),
-    width: vw(151),
+    marginRight: vw(15),
+    width: vw(170),
   },
   phoneIconCont: {
     height: vh(19),

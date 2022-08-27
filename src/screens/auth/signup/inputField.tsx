@@ -19,6 +19,7 @@ export default function InputField(props: any) {
       }>
       <TextInput
         value={props.value}
+        placeholderTextColor={Color.darkGrey}
         onChangeText={_onChangeText}
         placeholder={showPlaceholder ? props.placeholder : ''}
         onFocus={() => {
@@ -62,6 +63,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: vw(16),
     lineHeight: vh(20),
-    color: Color.black,
+    color: Color.white,
   },
 });

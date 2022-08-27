@@ -32,13 +32,12 @@ export default function Login() {
           (userDetails: any) => {
             setLoading(false);
             let confirm = userDetails;
-            navigation.navigate(Names.OTP, {
+            navigation.replace(Names.OTP, {
               confirm: confirm,
             });
           },
           (error: any) => {
             setLoading(false);
-            console.log('erroer', error);
             showSnackBar(error.code);
           },
         ),

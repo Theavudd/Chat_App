@@ -4,8 +4,8 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
   AppState,
+  FlatList,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Strings from '../../../utils/constants/strings';
@@ -13,11 +13,11 @@ import {styles} from './styles';
 import CommonFunctions, {showSnackBar} from '../../../utils/CommonFunctions';
 import {useDispatch, useSelector} from 'react-redux';
 import ComponentNames from '../../../utils/constants/componentNames';
-import {useNavigation} from '@react-navigation/native';
+import {CommonActions, useNavigation} from '@react-navigation/native';
 import {signOut} from '../../../redux/chat/action';
 import DefaultValues from '../../../utils/constants/defaultValues';
 import Loader from '../../../components/loader';
-import Color from '../../../utils/constants/color';
+import Header from './header';
 import LocalImages from '../../../utils/constants/localImages';
 import ActionTypeName from '../../../utils/actionTypeName';
 import firestore from '@react-native-firebase/firestore';
@@ -25,13 +25,13 @@ import firestore from '@react-native-firebase/firestore';
 function ChatList() {
   const [isLoading, setLoading] = useState(false);
   const navigation = useNavigation<any>();
-  const {name} = useSelector((state: any) => state.authReducer);
   const dispatch = useDispatch<any>();
-  const {uid} = useSelector((state: any) => state.authReducer);
+  const {uid, inbox} = useSelector((state: any) => state.authReducer);
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
     updateOnlineStatus();
+    setLoading(true);
     const subscription = AppState.addEventListener('change', nextAppState => {
       appState.current = nextAppState;
       updateOnlineStatus();
@@ -41,6 +41,28 @@ function ChatList() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    getInbox();
+    const recentChatListener = getInbox;
+
+    return () => recentChatListener();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getInbox = () => {
+    firestore()
+      .collection('Users')
+      .doc(uid)
+      .collection('Inbox')
+      .onSnapshot(documentSnapshot => {
+        setLoading(false);
+        let temp = documentSnapshot.docs.map(item => {
+          return item.data();
+        });
+        dispatch({type: 'Auth/updateInbox', payload: temp});
+      });
+  };
 
   const updateOnlineStatus = () => {
     firestore()
@@ -57,17 +79,25 @@ function ChatList() {
 
   const onSignOutPress = () => {
     setLoading(true);
+    dispatch(signOut());
     CommonFunctions.signOutWithFirebase(
       () => {
         setLoading(false);
         dispatch(signOut());
-        firestore().collection('Users').doc(uid).update({
-          online: false,
-        });
-        navigation.reset({
-          index: 0,
-          routes: [{name: ComponentNames.Auth}],
-        });
+        firestore()
+          .collection('Users')
+          .doc(uid)
+          .update({
+            online: false,
+          })
+          .then(() => {})
+          .catch(error => showSnackBar(error.message));
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: ComponentNames.Auth}],
+          }),
+        );
       },
       (error: any) => {
         setLoading(false);
@@ -80,28 +110,61 @@ function ChatList() {
     navigation.navigate(ComponentNames.ContactList);
   };
 
-  return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.innerContainer}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.profileImgCont}>
-            <Image
-              source={{uri: DefaultValues.defaultImage}}
-              style={styles.profileImage}
-            />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>{name}</Text>
-        </View>
-        <View style={styles.searchView}>
-          <TextInput
-            placeholder={Strings.search}
-            style={styles.searchBar}
-            placeholderTextColor={Color.white}
+  const onRecentContactPress = (item: any) => {
+    navigation.navigate(ComponentNames.ChatRoom, {
+      roomid: item?.roomid,
+      recieverName: item?.Name,
+      receiverId: item?.id,
+      avatar: item?.avatar,
+    });
+  };
+
+  const _renderRecentChats = ({item}: any) => {
+    return (
+      <TouchableOpacity
+        activeOpacity={DefaultValues.activeOpacity}
+        onPress={() => onRecentContactPress(item)}
+        style={styles.item}>
+        <View style={styles.contactImageContainer}>
+          <Image
+            source={{
+              uri:
+                item?.avatar !== '' ? item?.avatar : DefaultValues.defaultImage,
+            }}
+            style={styles.contactImage}
+            resizeMode={'contain'}
           />
         </View>
+        <View style={styles.innerItemContainer}>
+          <View style={styles.nameContainer}>
+            <Text style={styles.contactNameText}>{item?.Name}</Text>
+            <View style={styles.lastMsgContainer}>
+              {item?.lastMsg?.user?._id === uid && (
+                <Image source={LocalImages.sent} style={styles.sent} />
+              )}
+              <Text style={styles.lastMsgText}>{item?.lastMsg?.text}</Text>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  const _itemSeperator = () => {
+    return <View style={styles.itemSeperator} />;
+  };
+
+  return (
+    <View style={styles.container}>
+      <Header />
+      <SafeAreaView style={styles.innerContainer}>
         <View>
           <Text style={styles.inboxText}>{Strings.inbox}</Text>
         </View>
+        <FlatList
+          data={inbox}
+          renderItem={_renderRecentChats}
+          ItemSeparatorComponent={_itemSeperator}
+        />
         <Text style={styles.signoutText} onPress={onSignOutPress}>
           {Strings.signOut}
         </Text>

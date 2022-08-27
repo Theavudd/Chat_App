@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useLayoutEffect} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {
   Bubble,
   Composer,
@@ -18,44 +18,40 @@ import LocalImages from '../../../utils/constants/localImages';
 import Header from './header';
 import {vh, vw} from '../../../utils/Dimension';
 import Color from '../../../utils/constants/color';
+import CommonFunctions from '../../../utils/CommonFunctions';
+import DefaultValues from '../../../utils/constants/defaultValues';
+import debounce from '../../../utils/debounce';
 
 export default function ChatRoom() {
-  const {roomid, recieverName, receiverId}: any = useRoute().params;
+  const params = useRoute().params;
+  const {roomid, recieverName, receiverId}: any = params;
   const dispatch = useDispatch<any>();
+  const [isTyping, setTyping] = useState(false);
   const {chat} = useSelector((state: any) => state.chatReducer);
-  const {uid, name} = useSelector((state: any) => state.authReducer);
+  const {uid, name, avatar} = useSelector((state: any) => state.authReducer);
 
   useEffect(() => {
-    firestore()
-      .collection('Chats')
-      .doc(roomid)
-      .collection(roomid)
-      .onSnapshot(documentSnapshot => {
-        if (documentSnapshot) {
-          let tempArray: any = documentSnapshot.docs.map((item: any) => {
-            return item.data();
-          });
-          tempArray = tempArray.sort(
-            (a: any, b: any) => b.createdAt - a.createdAt,
-          );
-          if (tempArray.length === 0) {
-            firestore()
-              .collection('Users')
-              .doc(uid)
-              .collection('Inbox')
-              .doc(receiverId)
-              .set({
-                Name: recieverName,
-                userId: receiverId,
-                roomid: roomid,
-              });
-          }
-          dispatch({
-            type: 'Chat/updateChat',
-            payload: {roomid, data: tempArray},
-          });
-        }
-      });
+    const typingListener = CommonFunctions.getTypingStatus(roomid, receiverId);
+    // firestore().collection('Chats').doc(roomid).collection('TypingStatus').doc(uid)
+
+    return () => typingListener;
+  }, []);
+
+  useEffect(() => {
+    CommonFunctions.getChatSnapshot(roomid, (documentSnapshot: any) => {
+      if (documentSnapshot) {
+        let tempArray: any = documentSnapshot.docs.map((item: any) => {
+          return item.data();
+        });
+        tempArray = tempArray.sort(
+          (a: any, b: any) => b.createdAt - a.createdAt,
+        );
+        dispatch({
+          type: 'Chat/updateChat',
+          payload: {roomid, data: tempArray},
+        });
+      }
+    });
   }, []);
 
   useLayoutEffect(() => {
@@ -65,7 +61,7 @@ export default function ChatRoom() {
       const subscriber = firestore()
         .collection('Chats')
         .doc(roomid)
-        .collection(roomid)
+        .collection('Messages')
         .onSnapshot(documentSnapshot => {
           if (documentSnapshot) {
             let tempArray: any = documentSnapshot.docs.map((item: any) => {
@@ -89,10 +85,26 @@ export default function ChatRoom() {
       type: 'Chat/updateChat',
       payload: {roomid, data: newArray},
     });
+    if (chat[roomid].length === 0) {
+      CommonFunctions.setInbox(uid, receiverId, {
+        Name: recieverName,
+        id: receiverId,
+        roomid: roomid,
+        avatar: params?.avatar,
+      });
+      CommonFunctions.setInbox(receiverId, uid, {
+        Name: name,
+        id: uid,
+        roomid: roomid,
+        avatar: avatar,
+      });
+    }
+    CommonFunctions.updateInbox(uid, receiverId, {lastMsg: messages[0]});
+    CommonFunctions.updateInbox(receiverId, uid, {lastMsg: messages[0]});
     firestore()
       .collection('Chats')
       .doc(roomid)
-      .collection(roomid)
+      .collection('Messages')
       .doc(messages[0]?._id)
       .set(messages[0])
       .then(() => {})
@@ -150,13 +162,12 @@ export default function ChatRoom() {
       />
     );
   };
-
-  return (
-    <View style={styles.container}>
+  const renderHeader = () => {
+    return (
       <Header
         title={recieverName}
         receiverId={receiverId}
-        image={'e'}
+        image={avatar}
         style={[
           styles.chatHeader,
           {
@@ -165,6 +176,26 @@ export default function ChatRoom() {
           },
         ]}
       />
+    );
+  };
+
+  const onChangeText = () => {
+    if (!isTyping) {
+      CommonFunctions.setTypingStatus(roomid, receiverId, true, () => {
+        setTyping(true);
+      });
+    }
+    debounce(
+      CommonFunctions.setTypingStatus(roomid, receiverId, false, () => {
+        setTyping(false);
+      }),
+      2000,
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {renderHeader()}
       <View
         style={[
           styles.bottomHeaderSeperator,
@@ -186,6 +217,8 @@ export default function ChatRoom() {
               ? getStatusBarHeight()
               : getStatusBarHeight() + 45,
         }}
+        isTyping={isTyping}
+        onInputTextChanged={onChangeText}
         renderComposer={_renderComposer}
         scrollToBottom
         renderSend={_renderSend}
@@ -195,7 +228,7 @@ export default function ChatRoom() {
         user={{
           _id: uid,
           name: name,
-          avatar: 'https://placeimg.com/140/140/any',
+          avatar: avatar !== '' ? avatar : DefaultValues.defaultImage,
         }}
       />
     </View>

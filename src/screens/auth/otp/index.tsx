@@ -82,53 +82,14 @@ export default function OTP() {
       getUID(
         otp,
         confirm,
-        (userDetails: any) => {
+        () => {
           setLoading(false);
-          firestore()
-            .collection('Users')
-            .doc(userDetails?.user?._user?.uid)
-            .update({
-              id: userDetails?.user?._user?.uid,
-              countryCode: countryCode,
-              phoneNo: phoneNo,
-            })
-            .then(() => {
-              setLoading(false);
-            })
-            .catch((error: any) => {
-              showSnackBar(error.code);
-            });
-          firestore()
-            .collection('Users')
-            .doc(uid)
-            .onSnapshot(documentSnapshot => {
-              console.log(
-                'documentSnapshot.data()?.Name,',
-                documentSnapshot?.data()?.Name,
-              );
-              console.log('dsadasd', documentSnapshot.data());
-              if (documentSnapshot.data()?.hasOwnProperty('Name')) {
-                console.log(
-                  'documentSnapshot.data()?.Name,',
-                  documentSnapshot?.data()?.Name,
-                );
-                console.log('dsadasd', documentSnapshot.data());
-                dispatch({
-                  type: ActionTypeName.storeName,
-                  payload: documentSnapshot?.data()?.Name,
-                });
-                navigation.reset({
-                  index: 0,
-                  routes: [{name: Names.Chat}],
-                });
-              } else {
-                navigation.navigate(Names.Signup);
-              }
-            });
+          navigation.replace(Names.Signup);
         },
         (error: any) => {
           setLoading(false);
-          showSnackBar(error.code);
+          console.log('error', error);
+          showSnackBar(error.message);
         },
       ),
     );

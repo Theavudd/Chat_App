@@ -20,6 +20,7 @@ export default function SplashScreen() {
   const {name} = useSelector((state: any) => state.authReducer);
   const navigation = useNavigation();
   useEffect(() => {
+    console.log('Name is', name);
     setTimeout(() => {
       if (name === '') {
         navigation.dispatch(StackActions.replace(Names.Auth));

@@ -1,9 +1,9 @@
-const debounce = (func: Function, timeout: number = 500) => {
+const debounce = (func: Function, timeout: number = 700) => {
   let timer: number;
-  return (txt: string) => {
+  return () => {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      func(txt);
+      func();
     }, timeout);
   };
 };
