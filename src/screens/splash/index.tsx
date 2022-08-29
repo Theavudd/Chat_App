@@ -17,13 +17,17 @@ import Fonts from '../../utils/constants/fonts';
 import {vh, vw} from '../../utils/Dimension';
 
 export default function SplashScreen() {
-  const {name} = useSelector((state: any) => state.authReducer);
+  const {name, uid} = useSelector((state: any) => state.authReducer);
   const navigation = useNavigation();
+
   useEffect(() => {
-    console.log('Name is', name);
     setTimeout(() => {
       if (name === '') {
-        navigation.dispatch(StackActions.replace(Names.Auth));
+        if (uid === '') {
+          navigation.dispatch(StackActions.replace(Names.Auth));
+        } else {
+          navigation.dispatch(StackActions.replace(Names.Signup));
+        }
       } else {
         navigation.dispatch(StackActions.replace(Names.Chat));
       }

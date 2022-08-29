@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: vh(50),
+    paddingHorizontal: vw(12),
     backgroundColor: Color.black,
   },
   backButton: {
@@ -75,9 +76,10 @@ const styles = StyleSheet.create({
     width: vw(30),
   },
   titleText: {
-    fontSize: vw(15),
+    fontSize: vw(18),
     lineHeight: vh(21),
-    fontFamily: Fonts.Regular,
+    marginLeft: vw(5),
+    fontFamily: Fonts.Bold,
     color: Color.white,
   },
 });

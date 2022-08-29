@@ -53,15 +53,14 @@ export default function SignUp() {
 
   const onSelectImage = () => {
     ImagePicker.openPicker({
-      width: vh(200),
-      height: vh(200),
-      compressImageQuality: 0.5,
+      width: vh(50),
+      height: vh(50),
+      compressImageQuality: 0.1,
       cropping: true,
     })
       .then(img => {
         const imageUri = Platform.OS === 'ios' ? img.sourceURL : img.path;
         setLoading(true);
-        // dispatch({type: 'Auth/StoreImage', payload: imageUri});
         uploadImage(imageUri);
       })
       .catch(() => {
@@ -110,7 +109,6 @@ export default function SignUp() {
 
   const onNextPress = () => {
     setLoading(true);
-    setName('');
     firestore()
       .collection('Users')
       .doc(uid)
@@ -124,8 +122,12 @@ export default function SignUp() {
         status: 'Hey There, I am using Whatsapp',
       })
       .then(() => {
+        setName('');
         setLoading(false);
-        dispatch({type: 'Auth/storeName', payload: Name});
+        dispatch({
+          type: 'Auth/storeSignUpDetails',
+          payload: {Name: Name, status: 'Hey There, I am using Whatsapp'},
+        });
         navigation.dispatch(StackActions.replace(ComponentNames.Chat));
       })
       .catch((error: any) => {

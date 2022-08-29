@@ -140,34 +140,32 @@ export const showSnackBar = (message: string) => {
  * @param id
  */
 
-const getTypingStatus = (roomid: string, id: string) => {
-  firestore()
-    .collection('Chats')
-    .doc(roomid)
-    .collection('TypingStatus')
-    .doc(id)
-    .onSnapshot(documentSnapshot => {
-      if (documentSnapshot) {
-        console.log('typing', documentSnapshot.data());
-      }
-    });
-};
-
-const setTypingStatus = (
+const getTypingStatus = (
   roomid: string,
-  uid: string,
-  payload: boolean,
+  id: string,
   successCallback: Function,
 ) => {
   firestore()
     .collection('Chats')
     .doc(roomid)
     .collection('TypingStatus')
+    .doc(id)
+    .onSnapshot(documentSnapshot => {
+      if (documentSnapshot.data()) {
+        successCallback(documentSnapshot?.data());
+        console.log('typing', documentSnapshot.data());
+      }
+    });
+};
+
+const setTypingStatus = (roomid: string, uid: string, payload: boolean) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('TypingStatus')
     .doc(uid)
     .set({isTyping: payload})
-    .then(() => {
-      successCallback();
-    })
+    .then(() => {})
     .catch(err => showSnackBar(err.message));
 };
 

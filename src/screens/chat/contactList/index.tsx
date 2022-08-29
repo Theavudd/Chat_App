@@ -80,7 +80,7 @@ export default function ContactList() {
                         : DefaultValues.defaultImage,
                   }}
                   style={styles.profileImage}
-                  resizeMode={'contain'}
+                  resizeMode={'cover'}
                 />
               </View>
               <View style={styles.innerItemContainer}>

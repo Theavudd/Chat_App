@@ -10,11 +10,9 @@ import {
 import React, {useEffect, useRef, useState} from 'react';
 import Strings from '../../../utils/constants/strings';
 import {styles} from './styles';
-import CommonFunctions, {showSnackBar} from '../../../utils/CommonFunctions';
 import {useDispatch, useSelector} from 'react-redux';
 import ComponentNames from '../../../utils/constants/componentNames';
-import {CommonActions, useNavigation} from '@react-navigation/native';
-import {signOut} from '../../../redux/chat/action';
+import {useNavigation} from '@react-navigation/native';
 import DefaultValues from '../../../utils/constants/defaultValues';
 import Loader from '../../../components/loader';
 import Header from './header';
@@ -31,7 +29,6 @@ function ChatList() {
 
   useEffect(() => {
     updateOnlineStatus();
-    setLoading(true);
     const subscription = AppState.addEventListener('change', nextAppState => {
       appState.current = nextAppState;
       updateOnlineStatus();
@@ -43,6 +40,7 @@ function ChatList() {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     getInbox();
     const recentChatListener = getInbox;
 
@@ -75,35 +73,6 @@ function ChatList() {
           payload: appState.current === 'active' ? true : false,
         });
       });
-  };
-
-  const onSignOutPress = () => {
-    setLoading(true);
-    dispatch(signOut());
-    CommonFunctions.signOutWithFirebase(
-      () => {
-        setLoading(false);
-        dispatch(signOut());
-        firestore()
-          .collection('Users')
-          .doc(uid)
-          .update({
-            online: false,
-          })
-          .then(() => {})
-          .catch(error => showSnackBar(error.message));
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: ComponentNames.Auth}],
-          }),
-        );
-      },
-      (error: any) => {
-        setLoading(false);
-        showSnackBar(error.code);
-      },
-    );
   };
 
   const onContactListPress = () => {
@@ -165,9 +134,6 @@ function ChatList() {
           renderItem={_renderRecentChats}
           ItemSeparatorComponent={_itemSeperator}
         />
-        <Text style={styles.signoutText} onPress={onSignOutPress}>
-          {Strings.signOut}
-        </Text>
         <TouchableOpacity
           activeOpacity={DefaultValues.activeOpacity}
           onPress={onContactListPress}

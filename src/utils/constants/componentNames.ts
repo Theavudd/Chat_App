@@ -5,6 +5,7 @@ const ComponentNames = {
   Login: 'Login',
   Splash: 'Splash',
   Signup: 'Signup',
+  Settings: 'Settings',
   ChatRoom: 'ChatRoom',
   ChatList: 'ChatList',
   ContactList: 'contactList',

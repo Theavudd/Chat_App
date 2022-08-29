@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
   titleText: {
     fontSize: vw(30),
     lineHeight: vh(45),
-    fontFamily: Fonts.Bold,
+    fontFamily: Fonts.BoldItalic,
     color: Color.white,
   },
   nameContainer: {},

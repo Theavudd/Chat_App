@@ -36,8 +36,11 @@ const AuthSlice = createSlice({
     StoreImage: (state: any, action) => {
       state.avatar = action.payload;
     },
-    storeName: (state: any, action) => {
-      state.name = action.payload;
+    storeSignUpDetails: (state: any, action) => {
+      const {payload} = action;
+      console.log('payl', payload);
+      state.status = payload.status;
+      state.name = payload.Name;
     },
     setOnlineStatus: (state: any, action) => {
       state.online = action.payload;

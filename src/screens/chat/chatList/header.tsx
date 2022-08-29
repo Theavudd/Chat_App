@@ -13,13 +13,20 @@ import Color from '../../../utils/constants/color';
 import DefaultValues from '../../../utils/constants/defaultValues';
 import LocalImages from '../../../utils/constants/localImages';
 import {useSelector} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import Names from '../../../utils/constants/componentNames';
 
 export default function Header() {
+  const navigation: any = useNavigation();
   const [search, setSearch] = useState<boolean>(false);
   const {avatar} = useSelector((state: any) => state.authReducer);
 
   const onSearchPress = () => {
     setSearch(!search);
+  };
+
+  const onProfilePress = () => {
+    navigation.navigate(Names.Settings);
   };
 
   return (
@@ -29,6 +36,7 @@ export default function Header() {
         <View style={styles.headerRight}>
           <TouchableOpacity
             style={styles.profileImgCont}
+            activeOpacity={DefaultValues.activeOpacity}
             onPress={onSearchPress}>
             <Image
               source={LocalImages.search}
@@ -36,12 +44,15 @@ export default function Header() {
               style={[styles.profileImage, {tintColor: Color.white}]}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.profileImgCont}>
+          <TouchableOpacity
+            style={styles.profileImgCont}
+            activeOpacity={DefaultValues.activeOpacity}
+            onPress={onProfilePress}>
             <Image
               source={{
                 uri: avatar !== '' ? avatar : DefaultValues.defaultImage,
               }}
-              resizeMode={'contain'}
+              resizeMode={'cover'}
               style={styles.profileImage}
             />
           </TouchableOpacity>

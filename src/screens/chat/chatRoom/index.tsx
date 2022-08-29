@@ -19,8 +19,6 @@ import Header from './header';
 import {vh, vw} from '../../../utils/Dimension';
 import Color from '../../../utils/constants/color';
 import CommonFunctions from '../../../utils/CommonFunctions';
-import DefaultValues from '../../../utils/constants/defaultValues';
-import debounce from '../../../utils/debounce';
 
 export default function ChatRoom() {
   const params = useRoute().params;
@@ -28,10 +26,17 @@ export default function ChatRoom() {
   const dispatch = useDispatch<any>();
   const [isTyping, setTyping] = useState(false);
   const {chat} = useSelector((state: any) => state.chatReducer);
+  const [timer, setTimer] = useState(0);
   const {uid, name, avatar} = useSelector((state: any) => state.authReducer);
 
   useEffect(() => {
-    const typingListener = CommonFunctions.getTypingStatus(roomid, receiverId);
+    const typingListener = CommonFunctions.getTypingStatus(
+      roomid,
+      receiverId,
+      (typing: any) => {
+        setTyping(typing.isTyping);
+      },
+    );
     // firestore().collection('Chats').doc(roomid).collection('TypingStatus').doc(uid)
 
     return () => typingListener;
@@ -180,17 +185,13 @@ export default function ChatRoom() {
   };
 
   const onChangeText = () => {
-    if (!isTyping) {
-      CommonFunctions.setTypingStatus(roomid, receiverId, true, () => {
-        setTyping(true);
-      });
-    }
-    debounce(
-      CommonFunctions.setTypingStatus(roomid, receiverId, false, () => {
-        setTyping(false);
-      }),
-      2000,
-    );
+    CommonFunctions.setTypingStatus(roomid, uid, true);
+    clearTimeout(timer);
+
+    const newTimer = setTimeout(() => {
+      CommonFunctions.setTypingStatus(roomid, uid, false);
+    }, 2000);
+    setTimer(newTimer);
   };
 
   return (
@@ -218,6 +219,7 @@ export default function ChatRoom() {
               : getStatusBarHeight() + 45,
         }}
         isTyping={isTyping}
+        renderAvatar={null}
         onInputTextChanged={onChangeText}
         renderComposer={_renderComposer}
         scrollToBottom
@@ -228,7 +230,6 @@ export default function ChatRoom() {
         user={{
           _id: uid,
           name: name,
-          avatar: avatar !== '' ? avatar : DefaultValues.defaultImage,
         }}
       />
     </View>
