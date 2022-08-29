@@ -11,7 +11,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {useRoute} from '@react-navigation/native';
 import {showSnackBar} from '../../../utils/CommonFunctions';
-import {Image, Platform, View} from 'react-native';
+import {Clipboard, Image, Platform, View} from 'react-native';
 import {styles} from './styles';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
 import LocalImages from '../../../utils/constants/localImages';
@@ -19,11 +19,14 @@ import Header from './header';
 import {vh, vw} from '../../../utils/Dimension';
 import Color from '../../../utils/constants/color';
 import CommonFunctions from '../../../utils/CommonFunctions';
+import Loader from '../../../components/loader';
+import Strings from '../../../utils/constants/strings';
 
 export default function ChatRoom() {
   const params = useRoute().params;
   const {roomid, recieverName, receiverId}: any = params;
   const dispatch = useDispatch<any>();
+  const [isLoading, setLoading] = useState(false);
   const [isTyping, setTyping] = useState(false);
   const {chat} = useSelector((state: any) => state.chatReducer);
   const [timer, setTimer] = useState(0);
@@ -37,7 +40,6 @@ export default function ChatRoom() {
         setTyping(typing.isTyping);
       },
     );
-    // firestore().collection('Chats').doc(roomid).collection('TypingStatus').doc(uid)
 
     return () => typingListener;
   }, []);
@@ -45,15 +47,36 @@ export default function ChatRoom() {
   useEffect(() => {
     CommonFunctions.getChatSnapshot(roomid, (documentSnapshot: any) => {
       if (documentSnapshot) {
+        let tempfilter = documentSnapshot.docs
+          .filter((item: any) => {
+            if (item.data()?.deleteBy) {
+              if (item.data().deleteForEveryone) {
+                return true;
+              } else {
+                if (item.data()?.deleteBy.includes(uid)) {
+                  return false;
+                } else {
+                  return true;
+                }
+              }
+            } else {
+              return true;
+            }
+          })
+          .map((item: any) => {
+            return item.data();
+          });
+        console.log('temp', tempfilter);
         let tempArray: any = documentSnapshot.docs.map((item: any) => {
           return item.data();
         });
-        tempArray = tempArray.sort(
+        tempfilter = tempfilter.sort(
           (a: any, b: any) => b.createdAt - a.createdAt,
         );
+        console.log('tempAr', tempArray);
         dispatch({
           type: 'Chat/updateChat',
-          payload: {roomid, data: tempArray},
+          payload: {roomid, data: tempfilter},
         });
       }
     });
@@ -151,6 +174,7 @@ export default function ChatRoom() {
             backgroundColor: '#4FBC87',
           },
           left: {
+            marginLeft: vw(5),
             backgroundColor: '#EFEEF4',
           },
         }}
@@ -167,6 +191,7 @@ export default function ChatRoom() {
       />
     );
   };
+
   const renderHeader = () => {
     return (
       <Header
@@ -194,6 +219,103 @@ export default function ChatRoom() {
     setTimer(newTimer);
   };
 
+  const onDeleteForMe = (message: any) => {
+    setLoading(true);
+    firestore()
+      .collection('Chats')
+      .doc(roomid)
+      .collection('Messages')
+      .doc(message?._id)
+      .update({
+        deleteForEveryone: false,
+        deleteBy: uid,
+      })
+      .then(() => {
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+        showSnackBar('Delete Failed');
+      });
+  };
+
+  const onDeleteForEveryone = (message: any) => {
+    console.log('mess', message);
+    setLoading(true);
+    firestore()
+      .collection('Chats')
+      .doc(roomid)
+      .collection('Messages')
+      .doc(message?._id)
+      .update({
+        deletedMessage: message?.text,
+        text: Strings.deletedMessage,
+        deleteForEveryone: true,
+        deleteBy: uid,
+      })
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((err: any) => {
+        setLoading(false);
+        showSnackBar(err.message);
+      });
+  };
+
+  const onMessageLongPress = (context: any, message: any) => {
+    if (message.text !== Strings.deletedMessage) {
+      let options;
+      let cancelButtonIndex;
+      if (message.user._id === uid) {
+        options = [
+          'Copy Text',
+          'Delete For Me',
+          'Delete For Everyone',
+          'Cancel',
+        ];
+        cancelButtonIndex = options.length - 1;
+        context.actionSheet().showActionSheetWithOptions(
+          {
+            options,
+            cancelButtonIndex,
+          },
+          (buttonIndex: any) => {
+            switch (buttonIndex) {
+              case 0:
+                Clipboard.setString(message.text);
+                break;
+              case 1:
+                onDeleteForMe(message);
+                break;
+              case 2:
+                onDeleteForEveryone(message);
+                break;
+            }
+          },
+        );
+      } else {
+        options = ['Copy Text', 'Delete For Me', 'Cancel'];
+        cancelButtonIndex = options.length - 1;
+        context.actionSheet().showActionSheetWithOptions(
+          {
+            options,
+            cancelButtonIndex,
+          },
+          (buttonIndex: any) => {
+            switch (buttonIndex) {
+              case 0:
+                Clipboard.setString(message.text);
+                break;
+              case 1:
+                onDeleteForMe(message);
+                break;
+            }
+          },
+        );
+      }
+    }
+  };
+
   return (
     <View style={styles.container}>
       {renderHeader()}
@@ -218,6 +340,7 @@ export default function ChatRoom() {
               ? getStatusBarHeight()
               : getStatusBarHeight() + 45,
         }}
+        onLongPress={onMessageLongPress}
         isTyping={isTyping}
         renderAvatar={null}
         onInputTextChanged={onChangeText}
@@ -232,6 +355,7 @@ export default function ChatRoom() {
           name: name,
         }}
       />
+      {isLoading && <Loader />}
     </View>
   );
 }

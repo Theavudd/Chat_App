@@ -103,7 +103,7 @@ export default function ContactList() {
 
   return (
     <View style={styles.container}>
-      <BackHeader title={'ContactList'} />
+      <BackHeader title={'ContactList'} backButton={true} />
       <FlatList data={contactList} renderItem={renderUsers} />
       {isLoading && <Loader />}
     </View>

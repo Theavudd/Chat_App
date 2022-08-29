@@ -60,4 +60,13 @@ export const styles = StyleSheet.create({
     marginHorizontal: vw(50),
     marginVertical: vh(20),
   },
+  topHeader: {
+    alignSelf: 'center',
+  },
+  statusText: {
+    color: Color.green,
+    marginTop: vh(20),
+    fontSize: vw(16),
+    textAlign: 'center',
+  },
 });

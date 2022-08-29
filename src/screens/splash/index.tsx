@@ -26,7 +26,9 @@ export default function SplashScreen() {
         if (uid === '') {
           navigation.dispatch(StackActions.replace(Names.Auth));
         } else {
-          navigation.dispatch(StackActions.replace(Names.Signup));
+          navigation.dispatch(
+            StackActions.replace(Names.Signup, {backButton: false}),
+          );
         }
       } else {
         navigation.dispatch(StackActions.replace(Names.Chat));

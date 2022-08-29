@@ -20,15 +20,11 @@ import Loader from '../../../components/loader';
 import Names from '../../../utils/constants/componentNames';
 import {getUID} from '../../../redux/auth/action';
 import CommonFunctions, {showSnackBar} from '../../../utils/CommonFunctions';
-import firestore from '@react-native-firebase/firestore';
 import BackgroundTimer from 'react-native-background-timer';
-import ActionTypeName from '../../../utils/actionTypeName';
 
 export default function OTP() {
   const navigation = useNavigation<any>();
-  const {countryCode, phoneNo, uid} = useSelector(
-    (state: any) => state.authReducer,
-  );
+  const {countryCode, phoneNo} = useSelector((state: any) => state.authReducer);
   const routes = useRoute<any>();
   const [otp, setOTP] = useState('');
   const [secondsLeft, setSecondsLeft] = useState(60);
@@ -84,7 +80,7 @@ export default function OTP() {
         confirm,
         () => {
           setLoading(false);
-          navigation.replace(Names.Signup);
+          navigation.replace(Names.Signup, {backButton: false});
         },
         (error: any) => {
           setLoading(false);

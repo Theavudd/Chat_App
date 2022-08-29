@@ -11,6 +11,7 @@ import {getStatusBarHeight} from 'react-native-status-bar-height';
 interface Props {
   title?: string;
   image?: any;
+  backButton?: boolean;
   style?: Object;
 }
 
@@ -35,11 +36,13 @@ export default function BackHeader(props: Props) {
         style={styles.backButton}
         onPress={onBackPress}
         activeOpacity={DefaultValues.activeOpacity}>
-        <Image
-          source={LocalImages.backbutton}
-          resizeMode={'contain'}
-          style={styles.backButtonImg}
-        />
+        {props?.backButton && (
+          <Image
+            source={LocalImages.backbutton}
+            resizeMode={'contain'}
+            style={styles.backButtonImg}
+          />
+        )}
         {props.image && (
           <Image
             source={{uri: 'https://placeimg.com/140/140/any'}}

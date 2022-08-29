@@ -1,10 +1,8 @@
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
 import styles from './styles';
-import BackHeader from '../../components/backHeader';
 import Strings from '../../utils/constants/strings';
 import LocalImages from '../../utils/constants/localImages';
-import DefaultValues from '../../utils/constants/defaultValues';
 import {useDispatch, useSelector} from 'react-redux';
 import SettingInnerTabs from './settingInnerTabs';
 import {CommonActions, useNavigation} from '@react-navigation/native';
@@ -13,10 +11,12 @@ import CommonFunctions, {showSnackBar} from '../../utils/CommonFunctions';
 import ComponentNames from '../../utils/constants/componentNames';
 import firestore from '@react-native-firebase/firestore';
 import Loader from '../../components/loader';
+import Header from './header';
+import DefaultValues from '../../utils/constants/defaultValues';
 
 export default function Settings() {
   const [isLoading, setLoading] = useState(false);
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
   const dispatch: any = useDispatch();
   const {uid, name, avatar, status} = useSelector(
     (state: any) => state.authReducer,
@@ -49,22 +49,18 @@ export default function Settings() {
       },
     );
   };
+
+  const onProfilePress = () => {
+    navigation.navigate(ComponentNames.Signup, {backButton: true});
+  };
+
   return (
     <View style={styles.container}>
-      <BackHeader style={styles.backHeader} />
-      <View style={styles.subHeader}>
-        <Text style={styles.yourProfileText}>{Strings.yourProfile}</Text>
-        <TouchableOpacity
-          style={styles.qrImageContainer}
-          activeOpacity={DefaultValues.activeOpacity}>
-          <Image
-            source={LocalImages.qrCode}
-            style={styles.qrImage}
-            resizeMode={'contain'}
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.profileBar}>
+      <Header />
+      <TouchableOpacity
+        style={styles.profileBar}
+        activeOpacity={DefaultValues.activeOpacity}
+        onPress={onProfilePress}>
         <Image source={{uri: avatar}} style={styles.profileImg} />
         <View style={styles.nameContainer}>
           <Text style={styles.profileNameText}>{name}</Text>
@@ -72,7 +68,7 @@ export default function Settings() {
             {status}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
       <View style={styles.settingsTab}>
         <SettingInnerTabs
           Image={LocalImages.account}
@@ -93,13 +89,13 @@ export default function Settings() {
           onPress={() => {}}
         />
         <SettingInnerTabs
-          Image={LocalImages.account}
+          Image={LocalImages.stats}
           header={Strings.dataAndStorageUsage}
           subHeader={`${Strings.networkUsage}`}
           onPress={() => {}}
         />
         <SettingInnerTabs
-          Image={LocalImages.account}
+          Image={LocalImages.help}
           header={Strings.faq}
           subHeader={`${Strings.faq}, ${Strings.contactus}`}
           onPress={() => {}}

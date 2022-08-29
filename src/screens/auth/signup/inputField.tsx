@@ -37,6 +37,7 @@ export default function InputField(props: any) {
 
 const styles = StyleSheet.create({
   container: {
+    marginVertical: vh(10),
     marginHorizontal: vw(16),
     borderRadius: vh(5),
     borderB: vh(1),

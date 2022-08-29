@@ -101,7 +101,7 @@ function ChatList() {
                 item?.avatar !== '' ? item?.avatar : DefaultValues.defaultImage,
             }}
             style={styles.contactImage}
-            resizeMode={'contain'}
+            resizeMode={'cover'}
           />
         </View>
         <View style={styles.innerItemContainer}>

@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   Image,
   Platform,
@@ -10,7 +9,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import Strings from '../../../utils/constants/strings';
 import {styles} from './styles';
-import {StackActions, useNavigation} from '@react-navigation/native';
+import {StackActions, useNavigation, useRoute} from '@react-navigation/native';
 import InputField from './inputField';
 import {useDispatch, useSelector} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -24,13 +23,16 @@ import firestore from '@react-native-firebase/firestore';
 import Loader from '../../../components/loader';
 import DefaultValues from '../../../utils/constants/defaultValues';
 import storage from '@react-native-firebase/storage';
+import BackHeader from '../../../components/backHeader';
 
 export default function SignUp() {
   const {avatar, uid, countryCode, phoneNo} = useSelector(
     (state: any) => state.authReducer,
   );
   const navigation = useNavigation<any>();
+  const params = useRoute()?.params;
   const [Name, setName] = useState('');
+  const [status, setStatus] = useState('Hey There, I am using Whatsapp');
   const [isLoading, setLoading] = useState(false);
   const dispatch = useDispatch<any>();
 
@@ -42,6 +44,7 @@ export default function SignUp() {
         console.log('doc', documentSnapshot.data());
         if (documentSnapshot.data()) {
           setName(documentSnapshot?.data()?.Name);
+          setStatus(documentSnapshot?.data()?.status);
           dispatch({
             type: 'Auth/storeUserDetails',
             payload: documentSnapshot.data(),
@@ -119,14 +122,14 @@ export default function SignUp() {
         PhoneNo: phoneNo,
         avatar: avatar,
         online: true,
-        status: 'Hey There, I am using Whatsapp',
+        status: status,
       })
       .then(() => {
         setName('');
         setLoading(false);
         dispatch({
           type: 'Auth/storeSignUpDetails',
-          payload: {Name: Name, status: 'Hey There, I am using Whatsapp'},
+          payload: {Name: Name, status: status},
         });
         navigation.dispatch(StackActions.replace(ComponentNames.Chat));
       })
@@ -135,12 +138,15 @@ export default function SignUp() {
         showSnackBar(error.message);
       });
   };
+  console.log('params', params);
 
   const renderHeader = () => {
     return (
-      <View style={styles.header}>
-        <Text style={styles.headerText}>{Strings.addDetails}</Text>
-      </View>
+      <BackHeader
+        title={params?.backButton ? Strings.editDetails : Strings.addDetails}
+        backButton={params?.backButton}
+        style={!params?.backButton ? styles.topHeader : {}}
+      />
     );
   };
 
@@ -176,6 +182,12 @@ export default function SignUp() {
           setValue={setName}
           placeholder={Strings.enterName}
         />
+        <Text style={styles.statusText}>{Strings.status}</Text>
+        <InputField
+          value={status}
+          setValue={setStatus}
+          placeholder={Strings.enterName}
+        />
       </View>
     );
   };
@@ -197,12 +209,12 @@ export default function SignUp() {
 
   return (
     <ImageBackground source={LocalImages.background} style={styles.container}>
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         {renderHeader()}
         {renderSignupDetails()}
         {renderSubmitButton()}
         {isLoading && <Loader />}
-      </SafeAreaView>
+      </View>
     </ImageBackground>
   );
 }
