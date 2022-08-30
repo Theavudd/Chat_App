@@ -1,5 +1,6 @@
 const LocalImages = {
-  sent: require('../../assets/images/read.png'),
+  sent: require('../../assets/images/tick.png'),
+  read: require('../../assets/images/read.png'),
   help: require('../../assets/images/help.png'),
   logo: require('../../assets/images/Logo.png'),
   bell: require('../../assets/images/bell.png'),

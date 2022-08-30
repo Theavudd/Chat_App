@@ -130,8 +130,8 @@ export const styles = StyleSheet.create({
   sent: {
     tintColor: Color.white,
     alignSelf: 'center',
-    height: vh(20),
-    width: vh(20),
+    height: vh(15),
+    width: vh(15),
     marginRight: vw(5),
   },
 });

@@ -1,32 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {
-  Bubble,
-  Composer,
-  GiftedChat,
-  InputToolbar,
-  Send,
-} from 'react-native-gifted-chat';
+import {GiftedChat} from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {useRoute} from '@react-navigation/native';
 import {showSnackBar} from '../../../utils/CommonFunctions';
-import {Clipboard, Image, Platform, View} from 'react-native';
+import Clipboard from '@react-native-community/clipboard';
+import {Platform, View, Dimensions} from 'react-native';
 import {styles} from './styles';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
-import LocalImages from '../../../utils/constants/localImages';
 import Header from './header';
-import {vh, vw} from '../../../utils/Dimension';
+import {vh} from '../../../utils/Dimension';
 import Color from '../../../utils/constants/color';
 import CommonFunctions from '../../../utils/CommonFunctions';
-import Loader from '../../../components/loader';
 import Strings from '../../../utils/constants/strings';
+import {
+  renderScrolToBottom,
+  _renderTextInput,
+  _renderSend,
+  renderBubble,
+  _renderComposer,
+} from './chat';
 
 export default function ChatRoom() {
   const params = useRoute().params;
   const {roomid, recieverName, receiverId}: any = params;
   const dispatch = useDispatch<any>();
-  const [isLoading, setLoading] = useState(false);
   const [isTyping, setTyping] = useState(false);
   const {chat} = useSelector((state: any) => state.chatReducer);
   const [timer, setTimer] = useState(0);
@@ -45,6 +44,7 @@ export default function ChatRoom() {
   }, []);
 
   useEffect(() => {
+    batchUpdate();
     CommonFunctions.getChatSnapshot(roomid, (documentSnapshot: any) => {
       if (documentSnapshot) {
         let tempfilter = documentSnapshot.docs
@@ -53,11 +53,7 @@ export default function ChatRoom() {
               if (item.data().deleteForEveryone) {
                 return true;
               } else {
-                if (item.data()?.deleteBy.includes(uid)) {
-                  return false;
-                } else {
-                  return true;
-                }
+                return !item.data()?.deleteBy.includes(uid);
               }
             } else {
               return true;
@@ -66,14 +62,15 @@ export default function ChatRoom() {
           .map((item: any) => {
             return item.data();
           });
-        console.log('temp', tempfilter);
-        let tempArray: any = documentSnapshot.docs.map((item: any) => {
-          return item.data();
-        });
         tempfilter = tempfilter.sort(
           (a: any, b: any) => b.createdAt - a.createdAt,
         );
-        console.log('tempAr', tempArray);
+        CommonFunctions.updateInbox(uid, receiverId, {
+          lastMsg: tempfilter[0],
+        });
+        CommonFunctions.updateInbox(receiverId, uid, {
+          lastMsg: tempfilter[0],
+        });
         dispatch({
           type: 'Chat/updateChat',
           payload: {roomid, data: tempfilter},
@@ -81,6 +78,32 @@ export default function ChatRoom() {
       }
     });
   }, []);
+
+  const batchUpdate = async () => {
+    const usersQuerySnapshot = await firestore()
+      .collection('Chats')
+      .doc(roomid)
+      .collection('Messages')
+      .get();
+    const batch = firestore().batch();
+
+    usersQuerySnapshot.forEach(documentSnapshot => {
+      if (documentSnapshot.data()?.user?._id !== uid) {
+        batch.update(documentSnapshot.ref, {received: true});
+      }
+    });
+
+    if (chat[roomid][0]._id !== uid) {
+      CommonFunctions.updateInbox(uid, receiverId, {
+        lastMsg: chat[roomid][0],
+      });
+      CommonFunctions.updateInbox(receiverId, uid, {
+        lastMsg: chat[roomid][0],
+      });
+    }
+
+    return batch.commit();
+  };
 
   useLayoutEffect(() => {
     if (!chat[`${roomid}`]) {
@@ -90,14 +113,34 @@ export default function ChatRoom() {
         .collection('Chats')
         .doc(roomid)
         .collection('Messages')
-        .onSnapshot(documentSnapshot => {
+        .onSnapshot((documentSnapshot: any) => {
+          batchUpdate();
           if (documentSnapshot) {
-            let tempArray: any = documentSnapshot.docs.map((item: any) => {
-              return item.data();
-            });
+            let tempfilter = documentSnapshot.docs
+              .filter((item: any) => {
+                if (item.data()?.deleteBy) {
+                  if (item.data().deleteForEveryone) {
+                    return true;
+                  } else {
+                    if (item.data()?.deleteBy.includes(uid)) {
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  }
+                } else {
+                  return true;
+                }
+              })
+              .map((item: any) => {
+                return item.data();
+              });
+            tempfilter = tempfilter.sort(
+              (a: any, b: any) => b.createdAt - a.createdAt,
+            );
             dispatch({
               type: 'Chat/updateChat',
-              payload: {roomid, data: tempArray},
+              payload: {roomid, data: tempfilter},
             });
           }
         });
@@ -119,77 +162,38 @@ export default function ChatRoom() {
         id: receiverId,
         roomid: roomid,
         avatar: params?.avatar,
+        sent: true,
       });
       CommonFunctions.setInbox(receiverId, uid, {
         Name: name,
         id: uid,
         roomid: roomid,
         avatar: avatar,
+        sent: true,
       });
     }
-    CommonFunctions.updateInbox(uid, receiverId, {lastMsg: messages[0]});
-    CommonFunctions.updateInbox(receiverId, uid, {lastMsg: messages[0]});
+    CommonFunctions.updateInbox(uid, receiverId, {
+      lastMsg: {...messages[0], sent: true, received: false},
+    });
+    CommonFunctions.updateInbox(receiverId, uid, {
+      lastMsg: {...messages[0], sent: true, received: false},
+    });
     firestore()
       .collection('Chats')
       .doc(roomid)
       .collection('Messages')
       .doc(messages[0]?._id)
-      .set(messages[0])
+      .set({
+        ...messages[0],
+        sent: true,
+        received: false,
+        deleteBy: '',
+        deleteForEveryone: false,
+      })
       .then(() => {})
       .catch((err: any) => {
         showSnackBar(err.messages);
       });
-  };
-
-  const renderScrolToBottom = () => {
-    return <Image source={LocalImages.arrow_Down} style={styles.arrowDown} />;
-  };
-
-  const _renderTextInput = (props: any) => {
-    return (
-      <InputToolbar containerStyle={styles.composerContainer} {...props} />
-    );
-  };
-  const _renderSend = (props: any) => {
-    return (
-      <Send containerStyle={styles.sendButtonContainer} {...props}>
-        <View style={styles.sendButtonContainer}>
-          <Image
-            source={LocalImages.sendButton}
-            style={styles.sendButton}
-            resizeMode={'contain'}
-          />
-        </View>
-      </Send>
-    );
-  };
-
-  const renderBubble = (props: any) => {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            marginRight: vw(5),
-            backgroundColor: '#4FBC87',
-          },
-          left: {
-            marginLeft: vw(5),
-            backgroundColor: '#EFEEF4',
-          },
-        }}
-      />
-    );
-  };
-
-  const _renderComposer = (props: any) => {
-    return (
-      <Composer
-        {...props}
-        placeholderTextColor={Color.lightGrey}
-        textInputStyle={styles.textInputStyle}
-      />
-    );
   };
 
   const renderHeader = () => {
@@ -220,7 +224,6 @@ export default function ChatRoom() {
   };
 
   const onDeleteForMe = (message: any) => {
-    setLoading(true);
     firestore()
       .collection('Chats')
       .doc(roomid)
@@ -228,20 +231,29 @@ export default function ChatRoom() {
       .doc(message?._id)
       .update({
         deleteForEveryone: false,
-        deleteBy: uid,
+        deleteBy: message.deleteBy ? roomid : uid,
       })
       .then(() => {
-        setLoading(false);
+        if (chat[roomid].length > 0) {
+          if (message._id === chat[roomid][0]._id) {
+            if (chat[roomid][1]) {
+              CommonFunctions.updateInbox(uid, receiverId, {
+                lastMsg: chat[roomid][1],
+              });
+            } else {
+              CommonFunctions.updateInbox(uid, receiverId, {
+                lastMsg: {...chat[roomid][1], text: ''},
+              });
+            }
+          }
+        }
       })
       .catch(() => {
-        setLoading(false);
         showSnackBar('Delete Failed');
       });
   };
 
   const onDeleteForEveryone = (message: any) => {
-    console.log('mess', message);
-    setLoading(true);
     firestore()
       .collection('Chats')
       .doc(roomid)
@@ -250,69 +262,71 @@ export default function ChatRoom() {
       .update({
         deletedMessage: message?.text,
         text: Strings.deletedMessage,
+        received: false,
+        sent: false,
+        pending: false,
         deleteForEveryone: true,
-        deleteBy: uid,
+        deleteBy: '',
       })
       .then(() => {
-        setLoading(false);
+        if (message._id === chat[roomid][0]._id) {
+          CommonFunctions.updateInbox(uid, receiverId, {
+            lastMsg: chat[roomid][1],
+          });
+          CommonFunctions.updateInbox(receiverId, uid, {
+            lastMsg: chat[roomid][1],
+          });
+        }
       })
       .catch((err: any) => {
-        setLoading(false);
         showSnackBar(err.message);
       });
   };
 
   const onMessageLongPress = (context: any, message: any) => {
-    if (message.text !== Strings.deletedMessage) {
-      let options;
-      let cancelButtonIndex;
-      if (message.user._id === uid) {
-        options = [
-          'Copy Text',
-          'Delete For Me',
-          'Delete For Everyone',
-          'Cancel',
-        ];
-        cancelButtonIndex = options.length - 1;
-        context.actionSheet().showActionSheetWithOptions(
-          {
-            options,
-            cancelButtonIndex,
-          },
-          (buttonIndex: any) => {
-            switch (buttonIndex) {
-              case 0:
-                Clipboard.setString(message.text);
-                break;
-              case 1:
-                onDeleteForMe(message);
-                break;
-              case 2:
-                onDeleteForEveryone(message);
-                break;
-            }
-          },
-        );
-      } else {
-        options = ['Copy Text', 'Delete For Me', 'Cancel'];
-        cancelButtonIndex = options.length - 1;
-        context.actionSheet().showActionSheetWithOptions(
-          {
-            options,
-            cancelButtonIndex,
-          },
-          (buttonIndex: any) => {
-            switch (buttonIndex) {
-              case 0:
-                Clipboard.setString(message.text);
-                break;
-              case 1:
-                onDeleteForMe(message);
-                break;
-            }
-          },
-        );
-      }
+    let options;
+    let cancelButtonIndex;
+    if (message.user._id === uid && message.text != Strings.deletedMessage) {
+      options = ['Copy Text', 'Delete For Me', 'Delete For Everyone', 'Cancel'];
+      cancelButtonIndex = options.length - 1;
+      context.actionSheet().showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+        },
+        (buttonIndex: any) => {
+          switch (buttonIndex) {
+            case 0:
+              Clipboard.setString(message.text);
+              break;
+            case 1:
+              onDeleteForMe(message);
+              break;
+            case 2:
+              onDeleteForEveryone(message);
+              break;
+          }
+        },
+      );
+    } else {
+      options = ['Copy Text', 'Delete For Me', 'Cancel'];
+      cancelButtonIndex = options.length - 1;
+      context.actionSheet().showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+        },
+        (buttonIndex: any) => {
+          switch (buttonIndex) {
+            case 0:
+              Clipboard.setString(message.text);
+              break;
+            case 1:
+              onDeleteForMe(message);
+              break;
+          }
+        },
+      );
     }
   };
 
@@ -322,11 +336,10 @@ export default function ChatRoom() {
       <View
         style={[
           styles.bottomHeaderSeperator,
+          // eslint-disable-next-line react-native/no-inline-styles
           {
             paddingTop:
-              Platform.OS === 'ios'
-                ? getStatusBarHeight()
-                : getStatusBarHeight() + 45,
+              Dimensions.get('screen').height < 700 ? getStatusBarHeight() : 0,
           },
         ]}
       />
@@ -355,7 +368,6 @@ export default function ChatRoom() {
           name: name,
         }}
       />
-      {isLoading && <Loader />}
     </View>
   );
 }

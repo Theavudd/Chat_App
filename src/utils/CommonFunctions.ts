@@ -153,7 +153,6 @@ const getTypingStatus = (
     .onSnapshot(documentSnapshot => {
       if (documentSnapshot.data()) {
         successCallback(documentSnapshot?.data());
-        console.log('typing', documentSnapshot.data());
       }
     });
 };

@@ -7,14 +7,14 @@ import {
   SafeAreaView,
 } from 'react-native';
 import React, {useState} from 'react';
-import {styles} from './styles';
-import Strings from '../../../utils/constants/strings';
-import Color from '../../../utils/constants/color';
-import DefaultValues from '../../../utils/constants/defaultValues';
-import LocalImages from '../../../utils/constants/localImages';
+import {styles} from './chatList/styles';
+import Strings from '../../utils/constants/strings';
+import Color from '../../utils/constants/color';
+import DefaultValues from '../../utils/constants/defaultValues';
+import LocalImages from '../../utils/constants/localImages';
 import {useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-import Names from '../../../utils/constants/componentNames';
+import Names from '../../utils/constants/componentNames';
 
 export default function Header() {
   const navigation: any = useNavigation();

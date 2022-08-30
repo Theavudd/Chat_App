@@ -6,7 +6,6 @@ import {useNavigation} from '@react-navigation/native';
 import ComponentNames from '../../../utils/constants/componentNames';
 import DefaultValues from '../../../utils/constants/defaultValues';
 import {styles} from './styles';
-import BackHeader from '../../../components/backHeader';
 import Loader from '../../../components/loader';
 
 export default function ContactList() {
@@ -53,7 +52,7 @@ export default function ContactList() {
     } else {
       roomid = uid + item.id;
     }
-    navigation.replace(ComponentNames.ChatRoom, {
+    navigation.navigate(ComponentNames.ChatRoom, {
       roomid,
       recieverName: item?.Name,
       receiverId: item?.id,
@@ -103,8 +102,7 @@ export default function ContactList() {
 
   return (
     <View style={styles.container}>
-      <BackHeader title={'ContactList'} backButton={true} />
-      <FlatList data={contactList} renderItem={renderUsers} />
+      <FlatList data={contactList} renderItem={renderUsers} bounces={false} />
       {isLoading && <Loader />}
     </View>
   );
