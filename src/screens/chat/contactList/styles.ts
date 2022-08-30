@@ -6,6 +6,7 @@ import {vh, vw} from '../../../utils/Dimension';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: vh(20),
     backgroundColor: Color.black,
   },
   item: {

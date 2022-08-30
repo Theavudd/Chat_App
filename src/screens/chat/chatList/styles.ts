@@ -5,6 +5,7 @@ import {vh, vw} from '../../../utils/Dimension';
 
 export const styles = StyleSheet.create({
   container: {
+    paddingTop: vh(20),
     flex: 1,
     backgroundColor: Color.black,
   },
@@ -48,9 +49,10 @@ export const styles = StyleSheet.create({
   searchView: {
     backgroundColor: Color.darkGrey,
     height: vh(40),
-    marginHorizontal: vw(25),
+    marginHorizontal: vw(20),
     borderRadius: vw(10),
     paddingHorizontal: vw(15),
+    marginVertical: vh(10),
   },
   searchBar: {
     height: '100%',
