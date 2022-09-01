@@ -15,12 +15,27 @@ import DefaultValues from '../../../utils/constants/defaultValues';
 import LocalImages from '../../../utils/constants/localImages';
 import ActionTypeName from '../../../utils/actionTypeName';
 import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
 
 function ChatList() {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch<any>();
   const {uid, inbox} = useSelector((state: any) => state.authReducer);
   const appState = useRef(AppState.currentState);
+
+  useEffect(() => {
+    const BlockListListener = firestore()
+      .collection('Users')
+      .doc(uid)
+      .collection('BlockList')
+      .onSnapshot((documentSnapshot: any) => {
+        let tempList = documentSnapshot.docs.map((item: any) => item.data());
+        dispatch({type: 'Auth/updateBlackList', payload: tempList});
+      });
+
+    return BlockListListener;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     updateOnlineStatus();
@@ -78,20 +93,20 @@ function ChatList() {
   };
 
   const _renderRecentChats = ({item}: any) => {
-    console.log('item', item);
     return (
       <TouchableOpacity
         activeOpacity={DefaultValues.activeOpacity}
         onPress={() => onRecentContactPress(item)}
         style={styles.item}>
         <View style={styles.contactImageContainer}>
-          <Image
+          <FastImage
             source={{
               uri:
                 item?.avatar !== '' ? item?.avatar : DefaultValues.defaultImage,
+              priority: FastImage.priority.high,
             }}
+            resizeMode={FastImage.resizeMode.cover}
             style={styles.contactImage}
-            resizeMode={'cover'}
           />
         </View>
         <View style={styles.innerItemContainer}>

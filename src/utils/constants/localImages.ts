@@ -1,4 +1,5 @@
 const LocalImages = {
+  add: require('../../assets/images/add.png'),
   sent: require('../../assets/images/tick.png'),
   read: require('../../assets/images/read.png'),
   help: require('../../assets/images/help.png'),
@@ -16,6 +17,7 @@ const LocalImages = {
   phone: require('../../assets/images/telephone.png'),
   sendButton: require('../../assets/images/send.png'),
   defaultUser: require('../../assets/images/user.png'),
+  blockUser: require('../../assets/images/blockuser.png'),
   arrow_Down: require('../../assets/images/arrow_Down.png'),
   background: require('../../assets/images/Background.png'),
   video_Camera: require('../../assets/images/video_camera.png'),

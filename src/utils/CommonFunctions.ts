@@ -2,6 +2,7 @@ import Auth from '@react-native-firebase/auth';
 import Snackbar from 'react-native-snackbar';
 import Color from './constants/color';
 import firestore from '@react-native-firebase/firestore';
+import Strings from './constants/strings';
 
 /**
  * @description Function to get Set Inbox
@@ -134,6 +135,25 @@ export const showSnackBar = (message: string) => {
   });
 };
 
+const addMessage = (roomid: string, messages: any) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .doc(messages[0]?._id)
+    .set({
+      ...messages[0],
+      sent: true,
+      received: false,
+      deleteBy: '',
+      deleteForEveryone: false,
+    })
+    .then(() => {})
+    .catch((err: any) => {
+      showSnackBar(err.messages);
+    });
+};
+
 /**
  * @description Function to get User's Typing Status
  * @param roomid
@@ -157,6 +177,40 @@ const getTypingStatus = (
     });
 };
 
+const batchUpdate = (
+  roomid: string,
+  uid: string,
+  receiverId: string,
+  chat: any,
+) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .get()
+    .then((usersQuerySnapshot: any) => {
+      if (usersQuerySnapshot) {
+        const batch = firestore().batch();
+
+        usersQuerySnapshot.forEach((documentSnapshot: any) => {
+          if (documentSnapshot?.data()?.user?._id !== uid) {
+            batch.update(documentSnapshot?.ref, {received: true});
+          }
+        });
+        if (chat[0]?.user?._id !== uid) {
+          updateInbox(uid, receiverId, {
+            lastMsg: chat[0],
+          });
+          updateInbox(receiverId, uid, {
+            lastMsg: chat[0],
+          });
+        }
+        return batch.commit();
+      }
+    })
+    .catch((error: any) => console.log('err', error));
+};
+
 const setTypingStatus = (roomid: string, uid: string, payload: boolean) => {
   firestore()
     .collection('Chats')
@@ -166,6 +220,98 @@ const setTypingStatus = (roomid: string, uid: string, payload: boolean) => {
     .set({isTyping: payload})
     .then(() => {})
     .catch(err => showSnackBar(err.message));
+};
+
+const blockUser = (uid: string, recieverId: string, name: string) => {
+  firestore()
+    .collection('Users')
+    .doc(uid)
+    .collection('BlockList')
+    .doc(recieverId)
+    .set({
+      id: recieverId,
+      name: name,
+    });
+};
+
+const unBlockContact = (blockedUid: string, uid: string) => {
+  firestore()
+    .collection('Users')
+    .doc(uid)
+    .collection('BlockList')
+    .doc(blockedUid)
+    .delete();
+};
+
+const onDeleteForEveryone = (
+  message: any,
+  roomid: string,
+  uid: string,
+  receiverId: string,
+  chat: any,
+) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .doc(message?._id)
+    .update({
+      deletedMessage: message?.text,
+      text: Strings.deletedMessage,
+      received: false,
+      sent: false,
+      pending: false,
+      deleteForEveryone: true,
+    })
+    .then(() => {
+      if (message._id === chat[roomid][0]._id) {
+        updateInbox(uid, receiverId, {
+          lastMsg: chat[1],
+        });
+        updateInbox(receiverId, uid, {
+          lastMsg: chat[1],
+        });
+      }
+    })
+    .catch((err: any) => {
+      showSnackBar(err.message);
+    });
+};
+
+const deleteForMe = (
+  message: any,
+  roomid: string,
+  uid: string,
+  receiverId: any,
+  chat: any,
+) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .doc(message?._id)
+    .update({
+      deleteForEveryone: false,
+      deleteBy: message.deleteBy ? roomid : uid,
+    })
+    .then(() => {
+      if (chat[roomid].length > 0) {
+        if (message._id === chat[roomid][0]._id) {
+          if (chat[roomid][1]) {
+            updateInbox(uid, receiverId, {
+              lastMsg: chat[roomid][1],
+            });
+          } else {
+            updateInbox(uid, receiverId, {
+              lastMsg: {...chat[roomid][1], text: ''},
+            });
+          }
+        }
+      }
+    })
+    .catch(() => {
+      showSnackBar('Delete Failed');
+    });
 };
 
 /**
@@ -181,4 +327,10 @@ export default {
   getChatSnapshot,
   getTypingStatus,
   setTypingStatus,
+  blockUser,
+  batchUpdate,
+  unBlockContact,
+  onDeleteForEveryone,
+  deleteForMe,
+  addMessage,
 };

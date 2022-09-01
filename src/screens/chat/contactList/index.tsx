@@ -1,4 +1,4 @@
-import {View, Text, FlatList, Image, TouchableOpacity} from 'react-native';
+import {View, Text, FlatList, TouchableOpacity} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
@@ -7,6 +7,7 @@ import ComponentNames from '../../../utils/constants/componentNames';
 import DefaultValues from '../../../utils/constants/defaultValues';
 import {styles} from './styles';
 import Loader from '../../../components/loader';
+import FastImage from 'react-native-fast-image';
 
 export default function ContactList() {
   const dispatch = useDispatch();
@@ -62,7 +63,7 @@ export default function ContactList() {
 
   const renderUsers = useCallback(
     ({item}: any) => {
-      console.log('item', item);
+      console.log('item', item?.avatar);
       if (item?.data?.id !== uid) {
         return (
           <View style={styles.contactContainer}>
@@ -71,15 +72,16 @@ export default function ContactList() {
               onPress={() => onContactPress(item.data)}
               style={styles.item}>
               <View style={styles.profileImgCont}>
-                <Image
+                <FastImage
                   source={{
                     uri:
                       item?.data?.avatar !== ''
                         ? item?.data?.avatar
                         : DefaultValues.defaultImage,
+                    priority: FastImage.priority.high,
                   }}
+                  resizeMode={FastImage.resizeMode.cover}
                   style={styles.profileImage}
-                  resizeMode={'cover'}
                 />
               </View>
               <View style={styles.innerItemContainer}>

@@ -7,6 +7,7 @@ const Color = {
   darkBlue: '#262A50',
   lightGrey: '#C4C4C4',
   darkGrey: '#17202A',
+  transparent: 'transparent',
 };
 
 export default Color;

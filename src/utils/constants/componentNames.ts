@@ -3,6 +3,7 @@ const ComponentNames = {
   Auth: 'Auth',
   Chat: 'Chat',
   Login: 'Login',
+  BlockList: 'BlockList',
   Splash: 'Splash',
   Signup: 'Signup',
   Settings: 'Settings',

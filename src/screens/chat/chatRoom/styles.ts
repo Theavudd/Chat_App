@@ -1,10 +1,12 @@
 import {StyleSheet} from 'react-native';
 import Color from '../../../utils/constants/color';
+import Fonts from '../../../utils/constants/fonts';
 import {vh, vw} from '../../../utils/Dimension';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Color.black,
   },
   arrowDown: {
     height: vh(20),
@@ -51,5 +53,28 @@ export const styles = StyleSheet.create({
   },
   textInputStyle: {
     color: Color.white,
+  },
+  footerCont: {
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+    borderColor: Color.white,
+    borderWidth: vw(1),
+    paddingHorizontal: vw(5),
+    paddingVertical: vh(5),
+    borderRadius: vw(10),
+  },
+  footerText: {
+    color: Color.white,
+    fontFamily: Fonts.Bold,
+    fontSize: vw(20),
+  },
+  cantReplyText: {
+    color: Color.white,
+    fontFamily: Fonts.Regular,
+    fontSize: vw(16),
+    alignSelf: 'center',
+    position: 'absolute',
+    bottom: 0,
   },
 });

@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {GiftedChat} from 'react-native-gifted-chat';
+import {GiftedChat, InputToolbar} from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {useRoute} from '@react-navigation/native';
-import {showSnackBar} from '../../../utils/CommonFunctions';
 import Clipboard from '@react-native-community/clipboard';
-import {Platform, View, Dimensions} from 'react-native';
+import {Platform, View, Dimensions, TouchableOpacity, Text} from 'react-native';
 import {styles} from './styles';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
 import Header from './header';
@@ -16,7 +15,6 @@ import CommonFunctions from '../../../utils/CommonFunctions';
 import Strings from '../../../utils/constants/strings';
 import {
   renderScrolToBottom,
-  _renderTextInput,
   _renderSend,
   renderBubble,
   _renderComposer,
@@ -24,12 +22,13 @@ import {
 
 export default function ChatRoom() {
   const params = useRoute().params;
-  const {roomid, recieverName, receiverId}: any = params;
+  const {roomid, recieverName, receiverId, avatar}: any = params;
   const dispatch = useDispatch<any>();
   const [isTyping, setTyping] = useState(false);
   const {chat} = useSelector((state: any) => state.chatReducer);
   const [timer, setTimer] = useState(0);
-  const {uid, name, avatar} = useSelector((state: any) => state.authReducer);
+  const [blocked, setBlocked] = useState(false);
+  const {uid, name, blockList} = useSelector((state: any) => state.authReducer);
 
   useEffect(() => {
     const typingListener = CommonFunctions.getTypingStatus(
@@ -44,7 +43,24 @@ export default function ChatRoom() {
   }, []);
 
   useEffect(() => {
-    batchUpdate();
+    const BlockListListener = firestore()
+      .collection('Users')
+      .doc(receiverId)
+      .collection('BlockList')
+      .onSnapshot((documentSnapshot: any) => {
+        let temp = documentSnapshot.docs.map((item: any) => item.data());
+        if (temp.find((element: any) => element.id === uid)) {
+          setBlocked(true);
+        } else {
+          setBlocked(false);
+        }
+      });
+
+    return BlockListListener;
+  }, []);
+
+  useEffect(() => {
+    CommonFunctions.batchUpdate(roomid, uid, receiverId, chat[roomid]);
     CommonFunctions.getChatSnapshot(roomid, (documentSnapshot: any) => {
       if (documentSnapshot) {
         let tempfilter = documentSnapshot.docs
@@ -79,32 +95,6 @@ export default function ChatRoom() {
     });
   }, []);
 
-  const batchUpdate = async () => {
-    const usersQuerySnapshot = await firestore()
-      .collection('Chats')
-      .doc(roomid)
-      .collection('Messages')
-      .get();
-    const batch = firestore().batch();
-
-    usersQuerySnapshot.forEach(documentSnapshot => {
-      if (documentSnapshot.data()?.user?._id !== uid) {
-        batch.update(documentSnapshot.ref, {received: true});
-      }
-    });
-
-    if (chat[roomid][0]._id !== uid) {
-      CommonFunctions.updateInbox(uid, receiverId, {
-        lastMsg: chat[roomid][0],
-      });
-      CommonFunctions.updateInbox(receiverId, uid, {
-        lastMsg: chat[roomid][0],
-      });
-    }
-
-    return batch.commit();
-  };
-
   useLayoutEffect(() => {
     if (!chat[`${roomid}`]) {
       dispatch({type: 'Chat/addRoom', roomid});
@@ -114,7 +104,7 @@ export default function ChatRoom() {
         .doc(roomid)
         .collection('Messages')
         .onSnapshot((documentSnapshot: any) => {
-          batchUpdate();
+          CommonFunctions.batchUpdate(roomid, uid, receiverId, chat[roomid]);
           if (documentSnapshot) {
             let tempfilter = documentSnapshot.docs
               .filter((item: any) => {
@@ -178,22 +168,7 @@ export default function ChatRoom() {
     CommonFunctions.updateInbox(receiverId, uid, {
       lastMsg: {...messages[0], sent: true, received: false},
     });
-    firestore()
-      .collection('Chats')
-      .doc(roomid)
-      .collection('Messages')
-      .doc(messages[0]?._id)
-      .set({
-        ...messages[0],
-        sent: true,
-        received: false,
-        deleteBy: '',
-        deleteForEveryone: false,
-      })
-      .then(() => {})
-      .catch((err: any) => {
-        showSnackBar(err.messages);
-      });
+    CommonFunctions.addMessage(roomid, messages);
   };
 
   const renderHeader = () => {
@@ -202,6 +177,8 @@ export default function ChatRoom() {
         title={recieverName}
         receiverId={receiverId}
         image={avatar}
+        id={uid}
+        blocked={blocked}
         style={[
           styles.chatHeader,
           {
@@ -210,6 +187,19 @@ export default function ChatRoom() {
           },
         ]}
       />
+    );
+  };
+
+  const renderFooter = () => {
+    let index = blockList.findIndex((item: any) => item.id === receiverId);
+    return index !== -1 ? (
+      <TouchableOpacity
+        style={styles.footerCont}
+        onPress={() => CommonFunctions.unBlockContact(receiverId, uid)}>
+        <Text style={styles.footerText}>{Strings.unblock}</Text>
+      </TouchableOpacity>
+    ) : (
+      blocked && <Text style={styles.cantReplyText}>{Strings.cantReply}</Text>
     );
   };
 
@@ -223,70 +213,10 @@ export default function ChatRoom() {
     setTimer(newTimer);
   };
 
-  const onDeleteForMe = (message: any) => {
-    firestore()
-      .collection('Chats')
-      .doc(roomid)
-      .collection('Messages')
-      .doc(message?._id)
-      .update({
-        deleteForEveryone: false,
-        deleteBy: message.deleteBy ? roomid : uid,
-      })
-      .then(() => {
-        if (chat[roomid].length > 0) {
-          if (message._id === chat[roomid][0]._id) {
-            if (chat[roomid][1]) {
-              CommonFunctions.updateInbox(uid, receiverId, {
-                lastMsg: chat[roomid][1],
-              });
-            } else {
-              CommonFunctions.updateInbox(uid, receiverId, {
-                lastMsg: {...chat[roomid][1], text: ''},
-              });
-            }
-          }
-        }
-      })
-      .catch(() => {
-        showSnackBar('Delete Failed');
-      });
-  };
-
-  const onDeleteForEveryone = (message: any) => {
-    firestore()
-      .collection('Chats')
-      .doc(roomid)
-      .collection('Messages')
-      .doc(message?._id)
-      .update({
-        deletedMessage: message?.text,
-        text: Strings.deletedMessage,
-        received: false,
-        sent: false,
-        pending: false,
-        deleteForEveryone: true,
-        deleteBy: '',
-      })
-      .then(() => {
-        if (message._id === chat[roomid][0]._id) {
-          CommonFunctions.updateInbox(uid, receiverId, {
-            lastMsg: chat[roomid][1],
-          });
-          CommonFunctions.updateInbox(receiverId, uid, {
-            lastMsg: chat[roomid][1],
-          });
-        }
-      })
-      .catch((err: any) => {
-        showSnackBar(err.message);
-      });
-  };
-
   const onMessageLongPress = (context: any, message: any) => {
     let options;
     let cancelButtonIndex;
-    if (message.user._id === uid && message.text != Strings.deletedMessage) {
+    if (message.user._id === uid && message.text !== Strings.deletedMessage) {
       options = ['Copy Text', 'Delete For Me', 'Delete For Everyone', 'Cancel'];
       cancelButtonIndex = options.length - 1;
       context.actionSheet().showActionSheetWithOptions(
@@ -300,10 +230,22 @@ export default function ChatRoom() {
               Clipboard.setString(message.text);
               break;
             case 1:
-              onDeleteForMe(message);
+              CommonFunctions.deleteForMe(
+                message,
+                roomid,
+                uid,
+                receiverId,
+                chat[roomid],
+              );
               break;
             case 2:
-              onDeleteForEveryone(message);
+              CommonFunctions.onDeleteForEveryone(
+                message,
+                roomid,
+                uid,
+                receiverId,
+                chat[roomid],
+              );
               break;
           }
         },
@@ -322,12 +264,25 @@ export default function ChatRoom() {
               Clipboard.setString(message.text);
               break;
             case 1:
-              onDeleteForMe(message);
+              CommonFunctions.deleteForMe(
+                message,
+                roomid,
+                uid,
+                receiverId,
+                chat[roomid],
+              );
               break;
           }
         },
       );
     }
+  };
+
+  const _renderTextInput = (props: any) => {
+    let index = blockList.findIndex((item: any) => item.id === receiverId);
+    return index === -1 && !blocked ? (
+      <InputToolbar containerStyle={styles.composerContainer} {...props} />
+    ) : null;
   };
 
   return (
@@ -368,6 +323,7 @@ export default function ChatRoom() {
           name: name,
         }}
       />
+      {renderFooter()}
     </View>
   );
 }

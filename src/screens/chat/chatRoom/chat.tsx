@@ -1,6 +1,6 @@
 import React from 'react';
 import {Image, View} from 'react-native';
-import {Bubble, Composer, InputToolbar, Send} from 'react-native-gifted-chat';
+import {Bubble, Composer, Send} from 'react-native-gifted-chat';
 import Color from '../../../utils/constants/color';
 import LocalImages from '../../../utils/constants/localImages';
 import {vw} from '../../../utils/Dimension';
@@ -8,10 +8,6 @@ import {styles} from './styles';
 
 export const renderScrolToBottom = () => {
   return <Image source={LocalImages.arrow_Down} style={styles.arrowDown} />;
-};
-
-export const _renderTextInput = (props: any) => {
-  return <InputToolbar containerStyle={styles.composerContainer} {...props} />;
 };
 export const _renderSend = (props: any) => {
   return (

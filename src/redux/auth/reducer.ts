@@ -8,6 +8,7 @@ const initialState = {
   avatar: '',
   inbox: [],
   contactList: [],
+  blockList: [],
   online: false,
 };
 
@@ -61,6 +62,10 @@ const AuthSlice = createSlice({
       state.avatar = payload.avatar;
       state.name = payload.Name;
       state.online = payload.online;
+    },
+    updateBlackList: (state: any, action: any) => {
+      const {payload} = action;
+      state.blockList = payload;
     },
   },
 });

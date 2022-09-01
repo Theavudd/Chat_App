@@ -1,4 +1,4 @@
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
 import styles from './styles';
 import Strings from '../../utils/constants/strings';
@@ -13,6 +13,7 @@ import firestore from '@react-native-firebase/firestore';
 import Loader from '../../components/loader';
 import Header from './header';
 import DefaultValues from '../../utils/constants/defaultValues';
+import FastImage from 'react-native-fast-image';
 
 export default function Settings() {
   const [isLoading, setLoading] = useState(false);
@@ -61,7 +62,14 @@ export default function Settings() {
         style={styles.profileBar}
         activeOpacity={DefaultValues.activeOpacity}
         onPress={onProfilePress}>
-        <Image source={{uri: avatar}} style={styles.profileImg} />
+        <FastImage
+          source={{
+            uri: avatar !== '' ? avatar : DefaultValues.defaultImage,
+            priority: FastImage.priority.high,
+          }}
+          resizeMode={FastImage.resizeMode.cover}
+          style={styles.profileImg}
+        />
         <View style={styles.nameContainer}>
           <Text style={styles.profileNameText}>{name}</Text>
           <Text style={styles.profileStatusText} numberOfLines={1}>
@@ -81,6 +89,14 @@ export default function Settings() {
           header={Strings.chats}
           subHeader={`${Strings.backup}, ${Strings.history}, ${Strings.wallpaper}`}
           onPress={() => {}}
+        />
+        <SettingInnerTabs
+          Image={LocalImages.blockUser}
+          header={Strings.blockList}
+          subHeader={`${Strings.blockUsers}`}
+          onPress={() => {
+            navigation.navigate(ComponentNames.BlockList);
+          }}
         />
         <SettingInnerTabs
           Image={LocalImages.bell}

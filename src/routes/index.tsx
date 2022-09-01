@@ -7,6 +7,7 @@ import Chat from './chatStack';
 import SignUp from '../screens/auth/signup';
 import SplashScreen from '../screens/splash';
 import Settings from '../screens/settings';
+import BlockList from '../screens/blockList';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export default function Route() {
         <Stack.Screen name={Names.Auth} component={Auth} />
         <Stack.Screen name={Names.Signup} component={SignUp} />
         <Stack.Screen name={Names.Chat} component={Chat} />
+        <Stack.Screen name={Names.BlockList} component={BlockList} />
         <Stack.Screen name={Names.Settings} component={Settings} />
       </Stack.Navigator>
     </NavigationContainer>
