@@ -1,7 +1,7 @@
 const Color = {
   red: 'red',
   grey: '#C8C8C8',
-  green: '#1EBE71',
+  green: '#128C7E',
   black: '#010101',
   white: '#FFFFFF',
   darkBlue: '#262A50',

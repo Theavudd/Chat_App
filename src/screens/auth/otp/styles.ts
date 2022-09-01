@@ -14,20 +14,22 @@ export const styles = StyleSheet.create({
   logoView: {
     marginTop: vh(130),
     alignItems: 'center',
+    height: vh(180),
+    alignSelf: 'center',
   },
   logoImageCont: {
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: vh(117),
-    width: vw(117),
+    top: vh(-30),
+    tintColor: Color.black,
+    position: 'absolute',
   },
   logoImg: {},
   logoText: {
+    color: Color.white,
     marginTop: vh(35),
     fontSize: vw(24),
-    color: Color.white,
     fontFamily: Fonts.Medium,
+    position: 'absolute',
+    bottom: 0,
   },
   numberView: {
     flexDirection: 'row',

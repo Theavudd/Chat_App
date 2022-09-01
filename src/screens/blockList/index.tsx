@@ -61,6 +61,13 @@ export default function BlockList() {
       </TouchableOpacity>
     );
   };
+  const _listEmptyComponent = () => {
+    return (
+      <View style={styles.listEmptyCont}>
+        <Text style={styles.emptyTextHeader}>{Strings.emptyBlockList}</Text>
+      </View>
+    );
+  };
 
   const ItemSeparator = () => {
     return <View style={styles.itemSeparator} />;
@@ -89,6 +96,7 @@ export default function BlockList() {
         renderItem={renderBlockList}
         bounces={false}
         ItemSeparatorComponent={ItemSeparator}
+        ListEmptyComponent={_listEmptyComponent}
       />
     </View>
   );

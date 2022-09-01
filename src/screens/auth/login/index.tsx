@@ -50,12 +50,16 @@ export default function Login() {
   const renderLogo = () => {
     return (
       <View style={styles.logoView}>
-        <ImageBackground
+        <Image
           source={LocalImages.logoContainer}
           style={styles.logoImageCont}
-          resizeMode={'contain'}>
-          <Image source={LocalImages.logo} style={styles.logoImg} />
-        </ImageBackground>
+          resizeMode={'contain'}
+        />
+        <Image
+          source={LocalImages.logo}
+          style={styles.logoImg}
+          resizeMode={'contain'}
+        />
         <Text style={styles.logoText}>{Strings.welcomeToWhatsapp}</Text>
       </View>
     );

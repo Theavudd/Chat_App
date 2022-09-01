@@ -197,13 +197,15 @@ const batchUpdate = (
             batch.update(documentSnapshot?.ref, {received: true});
           }
         });
-        if (chat[0]?.user?._id !== uid) {
-          updateInbox(uid, receiverId, {
-            lastMsg: chat[0],
-          });
-          updateInbox(receiverId, uid, {
-            lastMsg: chat[0],
-          });
+        if (chat[0]) {
+          if (chat[0]?.user?._id !== uid) {
+            updateInbox(uid, receiverId, {
+              lastMsg: chat[0],
+            });
+            updateInbox(receiverId, uid, {
+              lastMsg: chat[0],
+            });
+          }
         }
         return batch.commit();
       }
@@ -264,7 +266,7 @@ const onDeleteForEveryone = (
       deleteForEveryone: true,
     })
     .then(() => {
-      if (message._id === chat[roomid][0]._id) {
+      if (message._id === chat[0]._id) {
         updateInbox(uid, receiverId, {
           lastMsg: chat[1],
         });
@@ -295,15 +297,15 @@ const deleteForMe = (
       deleteBy: message.deleteBy ? roomid : uid,
     })
     .then(() => {
-      if (chat[roomid].length > 0) {
-        if (message._id === chat[roomid][0]._id) {
-          if (chat[roomid][1]) {
+      if (chat.length > 0) {
+        if (message._id === chat._id) {
+          if (chat[1]) {
             updateInbox(uid, receiverId, {
-              lastMsg: chat[roomid][1],
+              lastMsg: chat[1],
             });
           } else {
             updateInbox(uid, receiverId, {
-              lastMsg: {...chat[roomid][1], text: ''},
+              lastMsg: {...chat[1], text: ''},
             });
           }
         }

@@ -16,6 +16,7 @@ import LocalImages from '../../../utils/constants/localImages';
 import ActionTypeName from '../../../utils/actionTypeName';
 import firestore from '@react-native-firebase/firestore';
 import FastImage from 'react-native-fast-image';
+import Strings from '../../../utils/constants/strings';
 
 function ChatList() {
   const navigation = useNavigation<any>();
@@ -133,11 +134,21 @@ function ChatList() {
     return <View style={styles.itemSeperator} />;
   };
 
+  const _listEmptyComponent = () => {
+    return (
+      <View style={styles.listEmptyCont}>
+        <Text style={styles.emptyTextHeader}>{Strings.emptyChat}</Text>
+        <Text style={styles.emptyText}>{Strings.emptyChatSubHeader}</Text>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         data={inbox}
         renderItem={_renderRecentChats}
+        ListEmptyComponent={_listEmptyComponent}
         ItemSeparatorComponent={_itemSeperator}
         bounces={false}
       />

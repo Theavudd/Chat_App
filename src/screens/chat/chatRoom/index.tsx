@@ -81,15 +81,22 @@ export default function ChatRoom() {
         tempfilter = tempfilter.sort(
           (a: any, b: any) => b.createdAt - a.createdAt,
         );
-        CommonFunctions.updateInbox(uid, receiverId, {
-          lastMsg: tempfilter[0],
-        });
-        CommonFunctions.updateInbox(receiverId, uid, {
-          lastMsg: tempfilter[0],
-        });
+        if (chat[0]) {
+          CommonFunctions.updateInbox(uid, receiverId, {
+            lastMsg: tempfilter[0],
+          });
+          CommonFunctions.updateInbox(receiverId, uid, {
+            lastMsg: tempfilter[0],
+          });
+        }
         dispatch({
           type: 'Chat/updateChat',
           payload: {roomid, data: tempfilter},
+        });
+      } else {
+        dispatch({
+          type: 'Chat/updateChat',
+          payload: {roomid, data: []},
         });
       }
     });
@@ -132,6 +139,11 @@ export default function ChatRoom() {
               type: 'Chat/updateChat',
               payload: {roomid, data: tempfilter},
             });
+          } else {
+            dispatch({
+              type: 'Chat/updateChat',
+              payload: {roomid, data: []},
+            });
           }
         });
 
@@ -163,6 +175,7 @@ export default function ChatRoom() {
       });
     }
     CommonFunctions.updateInbox(uid, receiverId, {
+      avatar: avatar,
       lastMsg: {...messages[0], sent: true, received: false},
     });
     CommonFunctions.updateInbox(receiverId, uid, {

@@ -12,6 +12,7 @@ const LocalImages = {
   options: require('../../assets/images/options.png'),
   backbutton: require('../../assets/images/back.png'),
   message: require('../../assets/images/message.png'),
+  emptyChat: require('../../assets/images/empty.png'),
   stats: require('../../assets/images/dashboard.png'),
   account: require('../../assets/images/account.png'),
   phone: require('../../assets/images/telephone.png'),

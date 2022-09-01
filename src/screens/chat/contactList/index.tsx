@@ -8,6 +8,7 @@ import DefaultValues from '../../../utils/constants/defaultValues';
 import {styles} from './styles';
 import Loader from '../../../components/loader';
 import FastImage from 'react-native-fast-image';
+import Strings from '../../../utils/constants/strings';
 
 export default function ContactList() {
   const dispatch = useDispatch();
@@ -101,10 +102,22 @@ export default function ContactList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+  const _listEmptyComponent = () => {
+    return (
+      <View style={styles.listEmptyCont}>
+        <Text style={styles.emptyTextHeader}>{Strings.contactListEmpty}</Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <FlatList data={contactList} renderItem={renderUsers} bounces={false} />
+      <FlatList
+        data={contactList}
+        renderItem={renderUsers}
+        bounces={false}
+        ListEmptyComponent={_listEmptyComponent}
+      />
       {isLoading && <Loader />}
     </View>
   );

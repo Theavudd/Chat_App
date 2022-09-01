@@ -136,4 +136,21 @@ export const styles = StyleSheet.create({
     width: vh(15),
     marginRight: vw(5),
   },
+  listEmptyCont: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTextHeader: {
+    color: Color.white,
+    fontFamily: Fonts.Bold,
+    fontSize: vw(16),
+    lineHeight: vh(28),
+  },
+  emptyText: {
+    color: Color.white,
+    fontFamily: Fonts.Medium,
+    fontSize: vw(12),
+    lineHeight: vw(24),
+  },
 });

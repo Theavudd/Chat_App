@@ -8,6 +8,7 @@ const Strings = {
   online: 'Online',
   status: 'Status',
   backup: 'Backup',
+  appname: 'BuzzMe',
   unblock: 'Unblock',
   history: 'History',
   account: 'Account',
@@ -16,7 +17,6 @@ const Strings = {
   privacy: 'Privacy',
   message: 'Message',
   search: 'Search...',
-  appname: 'SwipeText',
   inbox: 'RecentChats',
   security: 'Security',
   updateImage: 'Update',
@@ -40,12 +40,16 @@ const Strings = {
   networkUsage: 'Network Usage',
   notification: 'Notifications',
   enterSMSCode: 'Enter SMS Code',
+  emptyBlockList: 'No contact is blocked',
   imageCancel: 'Image Selection Cancelled',
   welcomeToWhatsapp: 'Welcome To Whatsapp',
+  contactListEmpty: 'Contact List is Empty',
   deletedMessage: 'This Message was Deleted',
   dataAndStorageUsage: 'Data and storage usage',
   cantReply: "You can't reply to this Conversation",
+  emptyChat: "Haven't had a conversation with anyone",
   phoneNumberError: 'Phone Number must be 10 digit long',
+  emptyChatSubHeader: 'Go to contact to find your Contacts',
 };
 
 export default Strings;
