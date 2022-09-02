@@ -6,6 +6,7 @@ import {vh, vw} from '../../../utils/Dimension';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Color.black,
   },
   header: {
     paddingHorizontal: vw(10),
@@ -19,7 +20,7 @@ export const styles = StyleSheet.create({
     fontSize: vw(18),
     lineHeight: vh(28),
     fontFamily: Fonts.Bold,
-    color: Color.black,
+    color: Color.white,
   },
   backbutton: {
     height: vh(30),
@@ -52,11 +53,20 @@ export const styles = StyleSheet.create({
   imageButtons: {
     fontSize: vw(14),
     fontFamily: Fonts.Medium,
-    color: Color.black,
+    color: Color.white,
     opacity: 0.8,
   },
   nextButton: {
     marginHorizontal: vw(50),
     marginVertical: vh(20),
+  },
+  topHeader: {
+    alignSelf: 'center',
+  },
+  statusText: {
+    color: Color.green,
+    marginTop: vh(20),
+    fontSize: vw(16),
+    textAlign: 'center',
   },
 });

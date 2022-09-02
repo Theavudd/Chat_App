@@ -12,14 +12,11 @@ const ChatSlice = createSlice({
       const {payload} = action;
       state.chat[payload.roomid] = [...state.chat[payload.roomid], payload];
     },
-    addRoom: (state: any, action: any) => {
-      const {payload} = action;
-      console.log('payload', payload);
+    addRoom: (state: any) => {
       state.chat = {...state.chat, payload: []};
     },
     updateChat: (state: any, action) => {
       const {payload} = action;
-      console.log('payload', payload);
       state.chat[payload.roomid] = payload.data;
     },
   },

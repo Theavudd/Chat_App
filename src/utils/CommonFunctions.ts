@@ -2,9 +2,62 @@ import Auth from '@react-native-firebase/auth';
 import Snackbar from 'react-native-snackbar';
 import Color from './constants/color';
 import firestore from '@react-native-firebase/firestore';
+import Strings from './constants/strings';
 
 /**
- * @function sign
+ * @description Function to get Set Inbox
+ * @param uid
+ * @param id
+ * @param payload
+ */
+
+const updateInbox = (uid: string, receiverId: string, payload: any) => {
+  firestore()
+    .collection('Users')
+    .doc(uid)
+    .collection('Inbox')
+    .doc(receiverId)
+    .update(payload)
+    .then(() => {})
+    .catch((error: any) => showSnackBar(error.message));
+};
+/**
+ * @description Function to get Set Inbox
+ * @param uid
+ * @param id
+ * @param payload
+ */
+
+const setInbox = (uid: string, id: string, payload: any) => {
+  firestore()
+    .collection('Users')
+    .doc(uid)
+    .collection('Inbox')
+    .doc(id)
+    .set(payload)
+    .then(() => {})
+    .catch((error: any) => showSnackBar(error.message));
+};
+
+/**
+ * @description Function to get Chat Snapshot
+ * @param roomid
+ * @param successCallback
+ */
+const getChatSnapshot = (roomid: string, successCallback: Function) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .onSnapshot(documentSnapshot => {
+      successCallback(documentSnapshot);
+    });
+};
+
+/**
+ * @function signOutWithFirebase
+ * @param {*} successCallback
+ * @param {*} failureCallback
  */
 const signOutWithFirebase = (
   successCallback: Function,
@@ -82,39 +135,253 @@ export const showSnackBar = (message: string) => {
   });
 };
 
+const addMessage = (roomid: string, messages: any) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .doc(messages[0]?._id)
+    .set({
+      ...messages[0],
+      sent: true,
+      received: false,
+      deleteBy: '',
+      deleteForEveryone: false,
+    })
+    .then(() => {})
+    .catch((err: any) => {
+      showSnackBar(err.messages);
+    });
+};
+
 /**
- * @function addMsg
- * @description function to add messages to firestore
- * @param payload
- * @param successCallback
- * @param failureCallback
+ * @description Function to get User's Typing Status
+ * @param roomid
+ * @param id
  */
 
-export const addMessage = (
-  payload: any,
+const getTypingStatus = (
+  roomid: string,
+  id: string,
   successCallback: Function,
-  failureCallback: Function,
 ) => {
   firestore()
     .collection('Chats')
-    .doc(payload.roomid)
-    .collection(payload.roomid)
-    .add(payload)
-    .then(response => {
-      console.log('response', response);
-      // firestore()
-      //   .collection('Chats')
-      //   .doc(payload.roomid)
-      //   .collection(payload.roomid)
-      //   .doc(
-      //     response?._documentPath?.parts()[
-      //       response?.documentPath()?.parts().length - 1
-      //     ],
-      //   );
-      successCallback(response);
+    .doc(roomid)
+    .collection('TypingStatus')
+    .doc(id)
+    .onSnapshot(documentSnapshot => {
+      if (documentSnapshot.data()) {
+        successCallback(documentSnapshot?.data());
+      }
+    });
+};
+
+/**
+ * @function batchUpdate
+ * @description Function to Update Read Status
+ * @param roomid
+ * @param uid
+ * @param receiverId
+ * @param chat
+ */
+
+const batchUpdate = (
+  roomid: string,
+  uid: string,
+  receiverId: string,
+  chat: any,
+) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .get()
+    .then((usersQuerySnapshot: any) => {
+      if (usersQuerySnapshot) {
+        const batch = firestore().batch();
+
+        usersQuerySnapshot.forEach((documentSnapshot: any) => {
+          if (documentSnapshot?.data()?.user?._id !== uid) {
+            batch.update(documentSnapshot?.ref, {received: true});
+          }
+        });
+        if (chat[0]) {
+          if (chat[0]?.user?._id !== uid) {
+            updateInbox(uid, receiverId, {
+              lastMsg: chat[0],
+            });
+            updateInbox(receiverId, uid, {
+              lastMsg: chat[0],
+            });
+          }
+        }
+        return batch.commit();
+      }
     })
-    .catch((error: any) => {
-      failureCallback(error);
+    .catch((error: any) => console.log('err', error));
+};
+
+/**
+ * @function setTypingStatus
+ * @description Function to set Typing Status
+ * @param roomid
+ * @param uid
+ * @param payload
+ */
+
+const setTypingStatus = (roomid: string, uid: string, payload: boolean) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('TypingStatus')
+    .doc(uid)
+    .set({isTyping: payload})
+    .then(() => {})
+    .catch(err => showSnackBar(err.message));
+};
+
+/**
+ * @function blockUser
+ * @description Function to block a user
+ * @param uid
+ * @param recieverId
+ * @param name
+ */
+
+const blockUser = (uid: string, recieverId: string, name: string) => {
+  firestore()
+    .collection('Users')
+    .doc(uid)
+    .collection('BlockList')
+    .doc(recieverId)
+    .set({
+      id: recieverId,
+      name: name,
+    });
+};
+
+/**
+ * @function unBlockContact
+ * @description Function to unblock a contact
+ * @param blockedUid
+ * @param uid
+ */
+
+const unBlockContact = (blockedUid: string, uid: string) => {
+  firestore()
+    .collection('Users')
+    .doc(uid)
+    .collection('BlockList')
+    .doc(blockedUid)
+    .delete();
+};
+
+/**
+ * @function onDeleteForEveryone
+ * @description Function to Delete message for Everyone
+ * @param message
+ * @param roomid
+ * @param uid
+ * @param receiverId
+ * @param chat
+ */
+
+const onDeleteForEveryone = (
+  message: any,
+  roomid: string,
+  uid: string,
+  receiverId: string,
+  chat: any,
+) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .doc(message?._id)
+    .update({
+      deletedMessage: message?.text,
+      text: Strings.deletedMessage,
+      received: false,
+      sent: false,
+      pending: false,
+      deleteForEveryone: true,
+    })
+    .then(() => {
+      if (message._id === chat[0]._id) {
+        updateInbox(uid, receiverId, {
+          lastMsg: chat[1],
+        });
+        updateInbox(receiverId, uid, {
+          lastMsg: chat[1],
+        });
+      }
+    })
+    .catch((err: any) => {
+      showSnackBar(err.message);
+    });
+};
+
+/**
+ * @function deleteForMe
+ * @description Function to delete message for a single user
+ * @param message
+ * @param roomid
+ * @param uid
+ * @param receiverId
+ * @param chat
+ */
+
+const deleteForMe = (
+  message: any,
+  roomid: string,
+  uid: string,
+  receiverId: any,
+  chat: any,
+) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .collection('Messages')
+    .doc(message?._id)
+    .update({
+      deleteForEveryone: false,
+      deleteBy: message.deleteBy ? roomid : uid,
+    })
+    .then(() => {
+      if (chat.length > 0) {
+        if (message._id === chat._id) {
+          if (chat[1]) {
+            updateInbox(uid, receiverId, {
+              lastMsg: chat[1],
+            });
+          } else {
+            updateInbox(uid, receiverId, {
+              lastMsg: {...chat[1], text: ''},
+            });
+          }
+        }
+      }
+    })
+    .catch(() => {
+      showSnackBar('Delete Failed');
+    });
+};
+
+const clearChat = (roomid: string, uid: string, receiverId: string) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .set({
+      chatCleared: new Date().getTime(),
+    })
+    .then(() => {
+      updateInbox(uid, receiverId, {
+        lastMsg: {text: 'History was Cleared'},
+      });
+      updateInbox(receiverId, uid, {
+        lastMsg: {text: 'History was Cleared'},
+      });
     });
 };
 
@@ -126,5 +393,16 @@ export default {
   signOutWithFirebase,
   signInWithPhoneNumber,
   confirmCode,
+  updateInbox,
+  setInbox,
+  getChatSnapshot,
+  getTypingStatus,
+  setTypingStatus,
+  blockUser,
+  batchUpdate,
+  unBlockContact,
+  onDeleteForEveryone,
+  deleteForMe,
   addMessage,
+  clearChat,
 };

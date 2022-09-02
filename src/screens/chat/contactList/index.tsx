@@ -1,22 +1,26 @@
-import {View, Text, FlatList, Image, TouchableOpacity} from 'react-native';
-import React, {useCallback, useEffect} from 'react';
+import {View, Text, FlatList, TouchableOpacity} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import ComponentNames from '../../../utils/constants/componentNames';
 import DefaultValues from '../../../utils/constants/defaultValues';
 import {styles} from './styles';
-import BackHeader from '../../../components/backHeader';
+import Loader from '../../../components/loader';
+import FastImage from 'react-native-fast-image';
+import Strings from '../../../utils/constants/strings';
 
 export default function ContactList() {
   const dispatch = useDispatch();
-  const {uid, inbox} = useSelector((state: any) => state.authReducer);
-  // const {users} = useSelector((state: any) => state.);
+  const {uid, contactList} = useSelector((state: any) => state.authReducer);
+  const [isLoading, setLoading] = useState(false);
   const navigation = useNavigation<any>();
+
   useEffect(() => {
     const subscriber = firestore()
       .collection('Users')
       .onSnapshot((documentSnapshot: any) => {
+        setLoading(true);
         let userDetails = documentSnapshot.docs.map(async (item: any) => {
           let roomId;
           if (item.id < uid) {
@@ -25,7 +29,7 @@ export default function ContactList() {
             roomId = uid + item.id;
           }
 
-          let temp = await firestore()
+          await firestore()
             .collection('Chats')
             .doc(roomId)
             .collection(roomId)
@@ -38,6 +42,7 @@ export default function ContactList() {
           console.log('res', response);
           dispatch({type: 'Auth/updateUsers', payload: response});
         });
+        setLoading(false);
       });
     return () => subscriber();
   }, [dispatch, uid]);
@@ -53,30 +58,42 @@ export default function ContactList() {
       roomid,
       recieverName: item?.Name,
       receiverId: item?.id,
+      avatar: item?.avatar,
     });
   };
 
   const renderUsers = useCallback(
     ({item}: any) => {
-      if (item.data.id !== uid) {
+      console.log('item', item?.avatar);
+      if (item?.data?.id !== uid) {
         return (
-          <TouchableOpacity
-            activeOpacity={DefaultValues.activeOpacity}
-            onPress={() => onContactPress(item.data)}
-            style={styles.item}>
-            <View style={styles.profileImgCont}>
-              <Image
-                source={{uri: DefaultValues.defaultImage}}
-                style={styles.profileImage}
-                resizeMode={'contain'}
-              />
-            </View>
-            <View style={styles.innerItemContainer}>
-              <View style={styles.nameContainer}>
-                <Text style={styles.contactName}>{item.data.Name}</Text>
+          <View style={styles.contactContainer}>
+            <TouchableOpacity
+              activeOpacity={DefaultValues.activeOpacity}
+              onPress={() => onContactPress(item.data)}
+              style={styles.item}>
+              <View style={styles.profileImgCont}>
+                <FastImage
+                  source={{
+                    uri:
+                      item?.data?.avatar !== ''
+                        ? item?.data?.avatar
+                        : DefaultValues.defaultImage,
+                    priority: FastImage.priority.high,
+                  }}
+                  resizeMode={FastImage.resizeMode.cover}
+                  style={styles.profileImage}
+                />
               </View>
-            </View>
-          </TouchableOpacity>
+              <View style={styles.innerItemContainer}>
+                <View style={styles.nameContainer}>
+                  <Text style={styles.contactNameText}>{item?.data?.Name}</Text>
+                  <Text style={styles.statusText}>{item?.data?.status}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+            <View style={styles.itemSeperator} />
+          </View>
         );
       } else {
         return null;
@@ -85,17 +102,23 @@ export default function ContactList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+  const _listEmptyComponent = () => {
+    return (
+      <View style={styles.listEmptyCont}>
+        <Text style={styles.emptyTextHeader}>{Strings.contactListEmpty}</Text>
+      </View>
+    );
+  };
 
   return (
-    <View>
-      <BackHeader title={'ContactList'} />
+    <View style={styles.container}>
       <FlatList
-        data={inbox}
+        data={contactList}
         renderItem={renderUsers}
-        keyExtractor={item => {
-          return item.data.id;
-        }}
+        bounces={false}
+        ListEmptyComponent={_listEmptyComponent}
       />
+      {isLoading && <Loader />}
     </View>
   );
 }

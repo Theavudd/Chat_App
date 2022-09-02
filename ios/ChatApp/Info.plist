@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>ChatApp</string>
+	<string>BuzzMe</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -47,9 +47,9 @@
 				<true/>
 			</dict>
 		</dict>
-	</dict><key>NSCameraUsageDescription</key>
+	</dict>
+	<key>NSCameraUsageDescription</key>
 	<string>Camera access is required to shoot photos for your profile picture/cover photo, or to create in-app video highlights</string>
-
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photo access is required to select your profile/cover photos and upload your video highlights from your gallery</string>
 	<key>UIAppFonts</key>

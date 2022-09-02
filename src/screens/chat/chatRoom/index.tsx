@@ -1,61 +1,106 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useLayoutEffect} from 'react';
-import {
-  Bubble,
-  Composer,
-  GiftedChat,
-  InputToolbar,
-  Send,
-} from 'react-native-gifted-chat';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {GiftedChat, InputToolbar} from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {useRoute} from '@react-navigation/native';
-import {showSnackBar} from '../../../utils/CommonFunctions';
-import {Image, Platform, View} from 'react-native';
+import Clipboard from '@react-native-community/clipboard';
+import {Platform, View, Dimensions, TouchableOpacity, Text} from 'react-native';
 import {styles} from './styles';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
-import LocalImages from '../../../utils/constants/localImages';
 import Header from './header';
-import {vh, vw} from '../../../utils/Dimension';
+import {vh} from '../../../utils/Dimension';
 import Color from '../../../utils/constants/color';
+import CommonFunctions from '../../../utils/CommonFunctions';
+import Strings from '../../../utils/constants/strings';
+import {
+  renderScrolToBottom,
+  _renderSend,
+  renderBubble,
+  _renderComposer,
+} from './chat';
 
 export default function ChatRoom() {
-  const {roomid, recieverName, receiverId}: any = useRoute().params;
+  const params: any = useRoute().params;
+  const {roomid, recieverName, receiverId, avatar}: any = params;
   const dispatch = useDispatch<any>();
+  const [isTyping, setTyping] = useState(false);
   const {chat} = useSelector((state: any) => state.chatReducer);
-  const {uid, name} = useSelector((state: any) => state.authReducer);
+  const [timer, setTimer] = useState(0);
+  const [blocked, setBlocked] = useState(false);
+  const {uid, name, blockList} = useSelector((state: any) => state.authReducer);
 
   useEffect(() => {
-    firestore()
-      .collection('Chats')
-      .doc(roomid)
-      .collection(roomid)
-      .onSnapshot(documentSnapshot => {
-        if (documentSnapshot) {
-          let tempArray: any = documentSnapshot.docs.map((item: any) => {
-            return item.data();
-          });
-          tempArray = tempArray.sort(
-            (a: any, b: any) => b.createdAt - a.createdAt,
-          );
-          if (tempArray.length === 0) {
-            firestore()
-              .collection('Users')
-              .doc(uid)
-              .collection('Inbox')
-              .doc(receiverId)
-              .set({
-                Name: recieverName,
-                userId: receiverId,
-                roomid: roomid,
-              });
-          }
-          dispatch({
-            type: 'Chat/updateChat',
-            payload: {roomid, data: tempArray},
-          });
+    const typingListener = CommonFunctions.getTypingStatus(
+      roomid,
+      receiverId,
+      (typing: any) => {
+        setTyping(typing.isTyping);
+      },
+    );
+
+    return () => typingListener;
+  }, []);
+
+  useEffect(() => {
+    const BlockListListener = firestore()
+      .collection('Users')
+      .doc(receiverId)
+      .collection('BlockList')
+      .onSnapshot((documentSnapshot: any) => {
+        let temp = documentSnapshot.docs.map((item: any) => item.data());
+        if (temp.find((element: any) => element.id === uid)) {
+          setBlocked(true);
+        } else {
+          setBlocked(false);
         }
       });
+
+    return BlockListListener;
+  }, []);
+
+  useEffect(() => {
+    // let createdAt = firestore().collection('Chats').doc(roomid).get();
+    CommonFunctions.batchUpdate(roomid, uid, receiverId, chat[roomid]);
+    CommonFunctions.getChatSnapshot(roomid, (documentSnapshot: any) => {
+      if (documentSnapshot) {
+        let tempfilter = documentSnapshot.docs
+          .filter((item: any) => {
+            if (item.data()?.deleteBy) {
+              if (item.data().deleteForEveryone) {
+                return true;
+              } else {
+                return !item.data()?.deleteBy.includes(uid);
+              }
+            } else {
+              return true;
+            }
+          })
+          .map((item: any) => {
+            return item.data();
+          });
+        tempfilter = tempfilter.sort(
+          (a: any, b: any) => b.createdAt - a.createdAt,
+        );
+        if (chat[0]) {
+          CommonFunctions.updateInbox(uid, receiverId, {
+            lastMsg: tempfilter[0],
+          });
+          CommonFunctions.updateInbox(receiverId, uid, {
+            lastMsg: tempfilter[0],
+          });
+        }
+        dispatch({
+          type: 'Chat/updateChat',
+          payload: {roomid, data: tempfilter},
+        });
+      } else {
+        dispatch({
+          type: 'Chat/updateChat',
+          payload: {roomid, data: []},
+        });
+      }
+    });
   }, []);
 
   useLayoutEffect(() => {
@@ -65,15 +110,40 @@ export default function ChatRoom() {
       const subscriber = firestore()
         .collection('Chats')
         .doc(roomid)
-        .collection(roomid)
-        .onSnapshot(documentSnapshot => {
+        .collection('Messages')
+        .onSnapshot((documentSnapshot: any) => {
+          CommonFunctions.batchUpdate(roomid, uid, receiverId, chat[roomid]);
           if (documentSnapshot) {
-            let tempArray: any = documentSnapshot.docs.map((item: any) => {
-              return item.data();
-            });
+            let tempfilter = documentSnapshot.docs
+              .filter((item: any) => {
+                if (item.data()?.deleteBy) {
+                  if (item.data().deleteForEveryone) {
+                    return true;
+                  } else {
+                    if (item.data()?.deleteBy.includes(uid)) {
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  }
+                } else {
+                  return true;
+                }
+              })
+              .map((item: any) => {
+                return item.data();
+              });
+            tempfilter = tempfilter.sort(
+              (a: any, b: any) => b.createdAt - a.createdAt,
+            );
             dispatch({
               type: 'Chat/updateChat',
-              payload: {roomid, data: tempArray},
+              payload: {roomid, data: tempfilter},
+            });
+          } else {
+            dispatch({
+              type: 'Chat/updateChat',
+              payload: {roomid, data: []},
             });
           }
         });
@@ -89,74 +159,41 @@ export default function ChatRoom() {
       type: 'Chat/updateChat',
       payload: {roomid, data: newArray},
     });
-    firestore()
-      .collection('Chats')
-      .doc(roomid)
-      .collection(roomid)
-      .doc(messages[0]?._id)
-      .set(messages[0])
-      .then(() => {})
-      .catch((err: any) => {
-        showSnackBar(err.messages);
+    if (chat[roomid].length === 0) {
+      CommonFunctions.setInbox(uid, receiverId, {
+        Name: recieverName,
+        id: receiverId,
+        roomid: roomid,
+        avatar: params?.avatar,
+        sent: true,
       });
+      CommonFunctions.setInbox(receiverId, uid, {
+        Name: name,
+        id: uid,
+        roomid: roomid,
+        avatar: avatar,
+        sent: true,
+      });
+    }
+    CommonFunctions.updateInbox(uid, receiverId, {
+      avatar: avatar,
+      lastMsg: {...messages[0], sent: true, received: false},
+    });
+    CommonFunctions.updateInbox(receiverId, uid, {
+      lastMsg: {...messages[0], sent: true, received: false},
+    });
+    CommonFunctions.addMessage(roomid, messages);
   };
 
-  const renderScrolToBottom = () => {
-    return <Image source={LocalImages.arrow_Down} style={styles.arrowDown} />;
-  };
-
-  const _renderTextInput = (props: any) => {
+  const renderHeader = () => {
     return (
-      <InputToolbar containerStyle={styles.composerContainer} {...props} />
-    );
-  };
-  const _renderSend = (props: any) => {
-    return (
-      <Send containerStyle={styles.sendButtonContainer} {...props}>
-        <View style={styles.sendButtonContainer}>
-          <Image
-            source={LocalImages.sendButton}
-            style={styles.sendButton}
-            resizeMode={'contain'}
-          />
-        </View>
-      </Send>
-    );
-  };
-
-  const renderBubble = (props: any) => {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            marginRight: vw(5),
-            backgroundColor: '#4FBC87',
-          },
-          left: {
-            backgroundColor: '#EFEEF4',
-          },
-        }}
-      />
-    );
-  };
-
-  const _renderComposer = (props: any) => {
-    return (
-      <Composer
-        {...props}
-        placeholderTextColor={Color.lightGrey}
-        textInputStyle={styles.textInputStyle}
-      />
-    );
-  };
-
-  return (
-    <View style={styles.container}>
       <Header
         title={recieverName}
         receiverId={receiverId}
-        image={'e'}
+        image={avatar}
+        roomid={roomid}
+        id={uid}
+        blocked={blocked}
         style={[
           styles.chatHeader,
           {
@@ -165,14 +202,114 @@ export default function ChatRoom() {
           },
         ]}
       />
+    );
+  };
+
+  const renderFooter = () => {
+    let index = blockList.findIndex((item: any) => item.id === receiverId);
+    return index !== -1 ? (
+      <TouchableOpacity
+        style={styles.footerCont}
+        onPress={() => CommonFunctions.unBlockContact(receiverId, uid)}>
+        <Text style={styles.footerText}>{Strings.unblock}</Text>
+      </TouchableOpacity>
+    ) : (
+      blocked && <Text style={styles.cantReplyText}>{Strings.cantReply}</Text>
+    );
+  };
+
+  const onChangeText = () => {
+    CommonFunctions.setTypingStatus(roomid, uid, true);
+    clearTimeout(timer);
+
+    const newTimer = setTimeout(() => {
+      CommonFunctions.setTypingStatus(roomid, uid, false);
+    }, 2000);
+    setTimer(newTimer);
+  };
+
+  const onMessageLongPress = (context: any, message: any) => {
+    let options;
+    let cancelButtonIndex;
+    if (message.user._id === uid && message.text !== Strings.deletedMessage) {
+      options = ['Copy Text', 'Delete For Me', 'Delete For Everyone', 'Cancel'];
+      cancelButtonIndex = options.length - 1;
+      context.actionSheet().showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+        },
+        (buttonIndex: any) => {
+          switch (buttonIndex) {
+            case 0:
+              Clipboard.setString(message.text);
+              break;
+            case 1:
+              CommonFunctions.deleteForMe(
+                message,
+                roomid,
+                uid,
+                receiverId,
+                chat[roomid],
+              );
+              break;
+            case 2:
+              CommonFunctions.onDeleteForEveryone(
+                message,
+                roomid,
+                uid,
+                receiverId,
+                chat[roomid],
+              );
+              break;
+          }
+        },
+      );
+    } else {
+      options = ['Copy Text', 'Delete For Me', 'Cancel'];
+      cancelButtonIndex = options.length - 1;
+      context.actionSheet().showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+        },
+        (buttonIndex: any) => {
+          switch (buttonIndex) {
+            case 0:
+              Clipboard.setString(message.text);
+              break;
+            case 1:
+              CommonFunctions.deleteForMe(
+                message,
+                roomid,
+                uid,
+                receiverId,
+                chat[roomid],
+              );
+              break;
+          }
+        },
+      );
+    }
+  };
+
+  const _renderTextInput = (props: any) => {
+    let index = blockList.findIndex((item: any) => item.id === receiverId);
+    return index === -1 && !blocked ? (
+      <InputToolbar containerStyle={styles.composerContainer} {...props} />
+    ) : null;
+  };
+
+  return (
+    <View style={styles.container}>
+      {renderHeader()}
       <View
         style={[
           styles.bottomHeaderSeperator,
+          // eslint-disable-next-line react-native/no-inline-styles
           {
             paddingTop:
-              Platform.OS === 'ios'
-                ? getStatusBarHeight()
-                : getStatusBarHeight() + 45,
+              Dimensions.get('screen').height < 700 ? getStatusBarHeight() : 0,
           },
         ]}
       />
@@ -186,6 +323,10 @@ export default function ChatRoom() {
               ? getStatusBarHeight()
               : getStatusBarHeight() + 45,
         }}
+        onLongPress={onMessageLongPress}
+        isTyping={isTyping}
+        renderAvatar={null}
+        onInputTextChanged={onChangeText}
         renderComposer={_renderComposer}
         scrollToBottom
         renderSend={_renderSend}
@@ -195,9 +336,9 @@ export default function ChatRoom() {
         user={{
           _id: uid,
           name: name,
-          avatar: 'https://placeimg.com/140/140/any',
         }}
       />
+      {renderFooter()}
     </View>
   );
 }

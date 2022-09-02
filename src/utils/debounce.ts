@@ -1,5 +1,5 @@
 const debounce = (func: Function, timeout: number = 500) => {
-  let timer: number;
+  var timer: number;
   return (txt: string) => {
     clearTimeout(timer);
     timer = setTimeout(() => {

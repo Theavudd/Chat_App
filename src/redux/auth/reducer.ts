@@ -5,8 +5,10 @@ const initialState = {
   phoneNo: '',
   uid: '',
   name: '',
-  image: '',
+  avatar: '',
   inbox: [],
+  contactList: [],
+  blockList: [],
   online: false,
 };
 
@@ -23,25 +25,47 @@ const AuthSlice = createSlice({
       state.uid = action.payload;
     },
     signOut: state => {
-      state.uid = initialState.uid;
-      state.countryCode = initialState.countryCode;
-      state.phoneNo = initialState.phoneNo;
-      state.image = initialState.image;
-      state.name = initialState.name;
+      state.uid = '';
+      state.countryCode = '';
+      state.phoneNo = '';
+      state.avatar = '';
+      state.name = '';
       state.online = false;
+      state.inbox = [];
+      state.contactList = [];
     },
     StoreImage: (state: any, action) => {
-      state.image = action.payload;
+      state.avatar = action.payload;
     },
-    storeName: (state: any, action) => {
-      state.name = action.payload;
+    storeSignUpDetails: (state: any, action) => {
+      const {payload} = action;
+      console.log('payl', payload);
+      state.status = payload.status;
+      state.name = payload.Name;
     },
     setOnlineStatus: (state: any, action) => {
       state.online = action.payload;
     },
-    updateUsers: (state: any, action: any) => {
+    updateInbox: (state: any, action: any) => {
       const {payload} = action;
       state.inbox = payload;
+    },
+    updateUsers: (state: any, action: any) => {
+      const {payload} = action;
+      state.contactList = payload;
+    },
+    storeUserDetails: (state: any, action: any) => {
+      const {payload} = action;
+      state.uid = payload.id;
+      state.countryCode = payload.CountryCode;
+      state.phoneNo = payload.PhoneNo;
+      state.avatar = payload.avatar;
+      state.name = payload.Name;
+      state.online = payload.online;
+    },
+    updateBlackList: (state: any, action: any) => {
+      const {payload} = action;
+      state.blockList = payload;
     },
   },
 });

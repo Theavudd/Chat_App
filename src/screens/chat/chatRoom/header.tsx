@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import LocalImages from '../../../utils/constants/localImages';
 import {vh, vw} from '../../../utils/Dimension';
@@ -8,16 +8,25 @@ import Fonts from '../../../utils/constants/fonts';
 import Color from '../../../utils/constants/color';
 import Strings from '../../../utils/constants/strings';
 import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
+import Modal from 'react-native-modal';
+import CommonFunctions from '../../../utils/CommonFunctions';
+import {useSelector} from 'react-redux';
 
 interface Props {
-  title?: string;
+  title?: any;
   image?: any;
+  roomid?: any;
   style?: Object;
   receiverId: string;
+  id: string;
+  blocked: boolean;
 }
 
 export default function Header(props: Props) {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const {blockList} = useSelector((state: any) => state.authReducer);
   const [online, setOnline] = useState(false);
   const onBackPress = () => {
     navigation.goBack();
@@ -34,6 +43,65 @@ export default function Header(props: Props) {
     return () => activeListener();
   });
 
+  const isBlocked = useMemo(
+    () => blockList.findIndex((item: any) => item.id === props.receiverId),
+    [blockList, props.receiverId],
+  );
+
+  const onOptionPress = () => {
+    setModalVisible(true);
+  };
+  const onBackDropPress = () => {
+    setModalVisible(false);
+  };
+
+  const renderModal = () => {
+    return (
+      <Modal
+        isVisible={modalVisible}
+        animationIn={'fadeIn'}
+        animationOut={'fadeOut'}
+        backdropColor={Color.transparent}
+        onBackdropPress={onBackDropPress}>
+        <View style={styles.modalView}>
+          <TouchableOpacity
+            style={styles.modalItemView}
+            onPress={() =>
+              isBlocked !== 0 ? modalFunctions(0) : modalFunctions(2)
+            }
+            activeOpacity={DefaultValues.activeOpacity}>
+            <Text style={styles.modalText}>
+              {isBlocked !== 0 ? Strings.blockUser : Strings.unBlockuser}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.modalItemView}
+            onPress={() => modalFunctions(1)}
+            activeOpacity={DefaultValues.activeOpacity}>
+            <Text style={styles.modalText}>{Strings.clearChat}</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    );
+  };
+
+  const clearChat = () => {};
+
+  const modalFunctions = (index: number) => {
+    setModalVisible(false);
+    switch (index) {
+      case 0:
+        CommonFunctions.blockUser(props.id, props.receiverId, props.title);
+        break;
+      case 1:
+        clearChat();
+        break;
+      case 2:
+        CommonFunctions.unBlockContact(props.receiverId, props.id);
+        break;
+    }
+  };
+
   return (
     <View style={[styles.container, props?.style]}>
       <TouchableOpacity
@@ -45,16 +113,23 @@ export default function Header(props: Props) {
           resizeMode={'contain'}
           style={styles.backButtonImg}
         />
-        {props.image && (
-          <Image
-            source={{uri: 'https://placeimg.com/140/140/any'}}
-            style={styles.profileImg}
-          />
-        )}
+        <FastImage
+          source={{
+            uri:
+              props?.image !== '' && !props.blocked
+                ? props?.image
+                : DefaultValues.defaultImage,
+            priority: FastImage.priority.high,
+          }}
+          resizeMode={FastImage.resizeMode.cover}
+          style={styles.profileImg}
+        />
       </TouchableOpacity>
       <View style={styles.nameContainer}>
         <Text style={styles.titleText}>{props?.title}</Text>
-        {online && <Text style={styles.subTitleText}>{Strings.online}</Text>}
+        {online && !props.blocked && (
+          <Text style={styles.subTitleText}>{Strings.online}</Text>
+        )}
       </View>
       <TouchableOpacity
         style={styles.phoneIconCont}
@@ -67,13 +142,15 @@ export default function Header(props: Props) {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.videoCameraIconCont}
+        onPress={onOptionPress}
         activeOpacity={DefaultValues.activeOpacity}>
         <Image
-          source={LocalImages.video_Camera}
+          source={LocalImages.options}
           resizeMode={'contain'}
           style={styles.videoIcon}
         />
       </TouchableOpacity>
+      {renderModal()}
     </View>
   );
 }
@@ -106,8 +183,8 @@ const styles = StyleSheet.create({
     lineHeight: vh(18),
     fontFamily: Fonts.Regular,
     color: Color.white,
-    marginRight: vw(40),
-    width: vw(151),
+    marginRight: vw(15),
+    width: vw(170),
   },
   phoneIconCont: {
     height: vh(19),
@@ -115,9 +192,8 @@ const styles = StyleSheet.create({
     marginHorizontal: vw(10),
   },
   videoCameraIconCont: {
-    height: vh(19),
-    top: vh(2),
-    width: vh(20),
+    height: vh(25),
+    width: vh(25),
     marginHorizontal: vw(10),
   },
   videoIcon: {
@@ -138,5 +214,22 @@ const styles = StyleSheet.create({
   },
   nameContainer: {
     marginHorizontal: vw(10),
+  },
+  modalView: {
+    width: vw(130),
+    position: 'absolute',
+    top: vh(12),
+    right: 0,
+    backgroundColor: Color.darkGrey,
+    borderRadius: vw(5),
+  },
+  modalItemView: {
+    paddingHorizontal: vw(10),
+    paddingVertical: vh(10),
+  },
+  modalText: {
+    color: Color.white,
+    fontFamily: Fonts.Regular,
+    fontSize: vw(14),
   },
 });

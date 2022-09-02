@@ -11,6 +11,7 @@ import {getStatusBarHeight} from 'react-native-status-bar-height';
 interface Props {
   title?: string;
   image?: any;
+  backButton?: boolean;
   style?: Object;
 }
 
@@ -35,11 +36,13 @@ export default function BackHeader(props: Props) {
         style={styles.backButton}
         onPress={onBackPress}
         activeOpacity={DefaultValues.activeOpacity}>
-        <Image
-          source={LocalImages.backbutton}
-          resizeMode={'contain'}
-          style={styles.backButtonImg}
-        />
+        {props?.backButton && (
+          <Image
+            source={LocalImages.backbutton}
+            resizeMode={'contain'}
+            style={styles.backButtonImg}
+          />
+        )}
         {props.image && (
           <Image
             source={{uri: 'https://placeimg.com/140/140/any'}}
@@ -57,6 +60,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: vh(50),
+    paddingHorizontal: vw(12),
     backgroundColor: Color.black,
   },
   backButton: {
@@ -75,9 +79,10 @@ const styles = StyleSheet.create({
     width: vw(30),
   },
   titleText: {
-    fontSize: vw(15),
+    fontSize: vw(18),
     lineHeight: vh(21),
-    fontFamily: Fonts.Regular,
+    marginLeft: vw(5),
+    fontFamily: Fonts.Bold,
     color: Color.white,
   },
 });

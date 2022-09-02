@@ -20,15 +20,11 @@ import Loader from '../../../components/loader';
 import Names from '../../../utils/constants/componentNames';
 import {getUID} from '../../../redux/auth/action';
 import CommonFunctions, {showSnackBar} from '../../../utils/CommonFunctions';
-import firestore from '@react-native-firebase/firestore';
 import BackgroundTimer from 'react-native-background-timer';
-import ActionTypeName from '../../../utils/actionTypeName';
 
 export default function OTP() {
   const navigation = useNavigation<any>();
-  const {countryCode, phoneNo, uid} = useSelector(
-    (state: any) => state.authReducer,
-  );
+  const {countryCode, phoneNo} = useSelector((state: any) => state.authReducer);
   const routes = useRoute<any>();
   const [otp, setOTP] = useState('');
   const [secondsLeft, setSecondsLeft] = useState(60);
@@ -82,53 +78,14 @@ export default function OTP() {
       getUID(
         otp,
         confirm,
-        (userDetails: any) => {
+        () => {
           setLoading(false);
-          firestore()
-            .collection('Users')
-            .doc(userDetails?.user?._user?.uid)
-            .update({
-              id: userDetails?.user?._user?.uid,
-              countryCode: countryCode,
-              phoneNo: phoneNo,
-            })
-            .then(() => {
-              setLoading(false);
-            })
-            .catch((error: any) => {
-              showSnackBar(error.code);
-            });
-          firestore()
-            .collection('Users')
-            .doc(uid)
-            .onSnapshot(documentSnapshot => {
-              console.log(
-                'documentSnapshot.data()?.Name,',
-                documentSnapshot?.data()?.Name,
-              );
-              console.log('dsadasd', documentSnapshot.data());
-              if (documentSnapshot.data()?.hasOwnProperty('Name')) {
-                console.log(
-                  'documentSnapshot.data()?.Name,',
-                  documentSnapshot?.data()?.Name,
-                );
-                console.log('dsadasd', documentSnapshot.data());
-                dispatch({
-                  type: ActionTypeName.storeName,
-                  payload: documentSnapshot?.data()?.Name,
-                });
-                navigation.reset({
-                  index: 0,
-                  routes: [{name: Names.Chat}],
-                });
-              } else {
-                navigation.navigate(Names.Signup);
-              }
-            });
+          navigation.replace(Names.Signup, {backButton: false});
         },
         (error: any) => {
           setLoading(false);
-          showSnackBar(error.code);
+          console.log('error', error);
+          showSnackBar(error.message);
         },
       ),
     );
@@ -137,12 +94,16 @@ export default function OTP() {
   const renderLogo = () => {
     return (
       <View style={styles.logoView}>
-        <ImageBackground
+        <Image
           source={LocalImages.logoContainer}
           style={styles.logoImageCont}
-          resizeMode={'contain'}>
-          <Image source={LocalImages.logo} style={styles.logoImg} />
-        </ImageBackground>
+          resizeMode={'contain'}
+        />
+        <Image
+          source={LocalImages.logo}
+          style={styles.logoImg}
+          resizeMode={'contain'}
+        />
         <Text style={styles.logoText}>{Strings.welcomeToWhatsapp}</Text>
       </View>
     );
