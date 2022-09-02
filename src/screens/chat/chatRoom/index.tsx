@@ -61,9 +61,9 @@ export default function ChatRoom() {
 
   useEffect(() => {
     // let createdAt = firestore().collection('Chats').doc(roomid).get();
+    CommonFunctions.batchUpdate(roomid, uid, receiverId, chat[roomid]);
     CommonFunctions.getChatSnapshot(roomid, (documentSnapshot: any) => {
       if (documentSnapshot) {
-        CommonFunctions.batchUpdate(roomid, uid, receiverId, chat[roomid]);
         let tempfilter = documentSnapshot.docs
           .filter((item: any) => {
             if (item.data()?.deleteBy) {

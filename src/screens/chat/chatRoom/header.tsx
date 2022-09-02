@@ -85,6 +85,8 @@ export default function Header(props: Props) {
     );
   };
 
+  const clearChat = () => {};
+
   const modalFunctions = (index: number) => {
     setModalVisible(false);
     switch (index) {
@@ -92,7 +94,7 @@ export default function Header(props: Props) {
         CommonFunctions.blockUser(props.id, props.receiverId, props.title);
         break;
       case 1:
-        CommonFunctions.clearChat(props?.roomid, props.id, props.receiverId);
+        clearChat();
         break;
       case 2:
         CommonFunctions.unBlockContact(props.receiverId, props.id);
