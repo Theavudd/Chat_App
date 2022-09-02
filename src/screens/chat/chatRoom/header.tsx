@@ -16,6 +16,7 @@ import {useSelector} from 'react-redux';
 interface Props {
   title?: any;
   image?: any;
+  roomid?: any;
   style?: Object;
   receiverId: string;
   id: string;
@@ -84,8 +85,6 @@ export default function Header(props: Props) {
     );
   };
 
-  const onClearChatPress = () => {};
-
   const modalFunctions = (index: number) => {
     setModalVisible(false);
     switch (index) {
@@ -93,7 +92,7 @@ export default function Header(props: Props) {
         CommonFunctions.blockUser(props.id, props.receiverId, props.title);
         break;
       case 1:
-        onClearChatPress();
+        CommonFunctions.clearChat(props?.roomid, props.id, props.receiverId);
         break;
       case 2:
         CommonFunctions.unBlockContact(props.receiverId, props.id);

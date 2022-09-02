@@ -73,21 +73,6 @@ export default function BlockList() {
     return <View style={styles.itemSeparator} />;
   };
 
-  // const renderModal = () => {
-  //   return (
-  //     <Modal isVisible={showModal}>
-  //       <View style={styles.modal}>
-  //         <TouchableOpacity style={styles.modalTouchable}>
-  //           <Text style={styles.modalText}>{Strings.cancel}</Text>
-  //         </TouchableOpacity>
-  //         <TouchableOpacity style={styles.modalTouchable}>
-  //           <Text style={styles.modalText}>{Strings.unblock}</Text>
-  //         </TouchableOpacity>
-  //       </View>
-  //     </Modal>
-  //   );
-  // };
-
   return (
     <View style={styles.container}>
       <BackHeader backButton={true} title={Strings.blockList} />

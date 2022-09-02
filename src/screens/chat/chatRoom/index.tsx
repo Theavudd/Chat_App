@@ -21,7 +21,7 @@ import {
 } from './chat';
 
 export default function ChatRoom() {
-  const params = useRoute().params;
+  const params: any = useRoute().params;
   const {roomid, recieverName, receiverId, avatar}: any = params;
   const dispatch = useDispatch<any>();
   const [isTyping, setTyping] = useState(false);
@@ -60,9 +60,10 @@ export default function ChatRoom() {
   }, []);
 
   useEffect(() => {
-    CommonFunctions.batchUpdate(roomid, uid, receiverId, chat[roomid]);
+    // let createdAt = firestore().collection('Chats').doc(roomid).get();
     CommonFunctions.getChatSnapshot(roomid, (documentSnapshot: any) => {
       if (documentSnapshot) {
+        CommonFunctions.batchUpdate(roomid, uid, receiverId, chat[roomid]);
         let tempfilter = documentSnapshot.docs
           .filter((item: any) => {
             if (item.data()?.deleteBy) {
@@ -190,6 +191,7 @@ export default function ChatRoom() {
         title={recieverName}
         receiverId={receiverId}
         image={avatar}
+        roomid={roomid}
         id={uid}
         blocked={blocked}
         style={[

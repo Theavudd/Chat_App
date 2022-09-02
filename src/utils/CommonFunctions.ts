@@ -11,12 +11,12 @@ import Strings from './constants/strings';
  * @param payload
  */
 
-const updateInbox = (uid: string, id: string, payload: any) => {
+const updateInbox = (uid: string, receiverId: string, payload: any) => {
   firestore()
     .collection('Users')
     .doc(uid)
     .collection('Inbox')
-    .doc(id)
+    .doc(receiverId)
     .update(payload)
     .then(() => {})
     .catch((error: any) => showSnackBar(error.message));
@@ -177,6 +177,15 @@ const getTypingStatus = (
     });
 };
 
+/**
+ * @function batchUpdate
+ * @description Function to Update Read Status
+ * @param roomid
+ * @param uid
+ * @param receiverId
+ * @param chat
+ */
+
 const batchUpdate = (
   roomid: string,
   uid: string,
@@ -213,6 +222,14 @@ const batchUpdate = (
     .catch((error: any) => console.log('err', error));
 };
 
+/**
+ * @function setTypingStatus
+ * @description Function to set Typing Status
+ * @param roomid
+ * @param uid
+ * @param payload
+ */
+
 const setTypingStatus = (roomid: string, uid: string, payload: boolean) => {
   firestore()
     .collection('Chats')
@@ -223,6 +240,14 @@ const setTypingStatus = (roomid: string, uid: string, payload: boolean) => {
     .then(() => {})
     .catch(err => showSnackBar(err.message));
 };
+
+/**
+ * @function blockUser
+ * @description Function to block a user
+ * @param uid
+ * @param recieverId
+ * @param name
+ */
 
 const blockUser = (uid: string, recieverId: string, name: string) => {
   firestore()
@@ -236,6 +261,13 @@ const blockUser = (uid: string, recieverId: string, name: string) => {
     });
 };
 
+/**
+ * @function unBlockContact
+ * @description Function to unblock a contact
+ * @param blockedUid
+ * @param uid
+ */
+
 const unBlockContact = (blockedUid: string, uid: string) => {
   firestore()
     .collection('Users')
@@ -244,6 +276,16 @@ const unBlockContact = (blockedUid: string, uid: string) => {
     .doc(blockedUid)
     .delete();
 };
+
+/**
+ * @function onDeleteForEveryone
+ * @description Function to Delete message for Everyone
+ * @param message
+ * @param roomid
+ * @param uid
+ * @param receiverId
+ * @param chat
+ */
 
 const onDeleteForEveryone = (
   message: any,
@@ -279,6 +321,16 @@ const onDeleteForEveryone = (
       showSnackBar(err.message);
     });
 };
+
+/**
+ * @function deleteForMe
+ * @description Function to delete message for a single user
+ * @param message
+ * @param roomid
+ * @param uid
+ * @param receiverId
+ * @param chat
+ */
 
 const deleteForMe = (
   message: any,
@@ -316,6 +368,23 @@ const deleteForMe = (
     });
 };
 
+const clearChat = (roomid: string, uid: string, receiverId: string) => {
+  firestore()
+    .collection('Chats')
+    .doc(roomid)
+    .set({
+      chatCleared: new Date().getTime(),
+    })
+    .then(() => {
+      updateInbox(uid, receiverId, {
+        lastMsg: {text: 'History was Cleared'},
+      });
+      updateInbox(receiverId, uid, {
+        lastMsg: {text: 'History was Cleared'},
+      });
+    });
+};
+
 /**
  * @exports
  * @description
@@ -335,4 +404,5 @@ export default {
   onDeleteForEveryone,
   deleteForMe,
   addMessage,
+  clearChat,
 };

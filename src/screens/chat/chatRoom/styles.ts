@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
   },
   footerCont: {
     position: 'absolute',
-    bottom: 0,
+    bottom: vh(20),
     alignSelf: 'center',
     borderColor: Color.white,
     borderWidth: vw(1),
@@ -75,6 +75,6 @@ export const styles = StyleSheet.create({
     fontSize: vw(16),
     alignSelf: 'center',
     position: 'absolute',
-    bottom: 0,
+    bottom: vh(20),
   },
 });
