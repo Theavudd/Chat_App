@@ -25,25 +25,12 @@ function ChatList() {
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
-    const BlockListListener = firestore()
-      .collection('Users')
-      .doc(uid)
-      .collection('BlockList')
-      .onSnapshot((documentSnapshot: any) => {
-        let tempList = documentSnapshot.docs.map((item: any) => item.data());
-        dispatch({type: 'Auth/updateBlackList', payload: tempList});
-      });
-
-    return BlockListListener;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     updateOnlineStatus();
     const subscription = AppState.addEventListener('change', nextAppState => {
       appState.current = nextAppState;
       updateOnlineStatus();
     });
+
     return () => {
       subscription.remove();
     };
@@ -103,7 +90,9 @@ function ChatList() {
           <FastImage
             source={{
               uri:
-                item?.avatar !== '' ? item?.avatar : DefaultValues.defaultImage,
+                item?.lastMsg?.avatar !== ''
+                  ? item?.avatar
+                  : DefaultValues.defaultImage,
               priority: FastImage.priority.high,
             }}
             resizeMode={FastImage.resizeMode.cover}

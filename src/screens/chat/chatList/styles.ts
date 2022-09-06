@@ -153,4 +153,10 @@ export const styles = StyleSheet.create({
     fontSize: vw(12),
     lineHeight: vw(24),
   },
+  timeText: {
+    color: Color.white,
+    fontFamily: Fonts.Medium,
+    fontSize: vw(12),
+    lineHeight: vw(24),
+  },
 });

@@ -37,6 +37,7 @@ export default function Settings() {
           })
           .then(() => {})
           .catch(error => showSnackBar(error.message));
+        dispatch(signOut());
         navigation.dispatch(
           CommonActions.reset({
             index: 0,

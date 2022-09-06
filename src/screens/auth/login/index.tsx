@@ -32,7 +32,7 @@ export default function Login() {
           (userDetails: any) => {
             setLoading(false);
             let confirm = userDetails;
-            navigation.replace(Names.OTP, {
+            navigation.navigate(Names.OTP, {
               confirm: confirm,
             });
           },

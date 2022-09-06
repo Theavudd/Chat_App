@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Header from './header';
 import Color from '../../utils/constants/color';
 import Strings from '../../utils/constants/strings';
@@ -7,10 +7,31 @@ import DefaultValues from '../../utils/constants/defaultValues';
 import {vw, vh} from '../../utils/Dimension';
 import ChatList from './chatList';
 import ContactList from './contactList';
+import {useSelector, useDispatch} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
 
 export default function Chats() {
   const topHeader = [Strings.recentChats, Strings.contact];
+  const dispatch = useDispatch();
   const [currentScreen, setCurrentScreen] = React.useState(0);
+  const {uid} = useSelector((state: any) => state.authReducer);
+  useEffect(() => {
+    const BlockListListener = firestore()
+      .collection('Users')
+      .doc(uid)
+      .collection('BlockList')
+      .onSnapshot((documentSnapshot: any) => {
+        if (documentSnapshot.docs) {
+          let tempList = documentSnapshot?.docs.map((item: any) =>
+            item?.data(),
+          );
+          dispatch({type: 'Auth/updateBlackList', payload: tempList});
+        } else {
+          dispatch({type: 'Auth/updateBlackList', payload: []});
+        }
+      });
+    return () => BlockListListener();
+  });
 
   const renderSubHeader = (item: any, index: number) => {
     return (

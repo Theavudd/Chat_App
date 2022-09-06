@@ -30,7 +30,7 @@ export default function SignUp() {
     (state: any) => state.authReducer,
   );
   const navigation = useNavigation<any>();
-  const params = useRoute()?.params;
+  const params: any = useRoute()?.params;
   const [Name, setName] = useState('');
   const [status, setStatus] = useState('Hey There, I am using Whatsapp');
   const [isLoading, setLoading] = useState(false);
@@ -41,8 +41,7 @@ export default function SignUp() {
       .collection('Users')
       .doc(uid)
       .onSnapshot(documentSnapshot => {
-        console.log('doc', documentSnapshot.data());
-        if (documentSnapshot.data()) {
+        if (documentSnapshot?.data()) {
           setName(documentSnapshot?.data()?.Name);
           setStatus(documentSnapshot?.data()?.status);
           dispatch({
@@ -135,10 +134,10 @@ export default function SignUp() {
       })
       .catch((error: any) => {
         setLoading(false);
+        console.log('error', error);
         showSnackBar(error.message);
       });
   };
-  console.log('params', params);
 
   const renderHeader = () => {
     return (

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useMemo, useState} from 'react';
 import {GiftedChat, InputToolbar} from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
@@ -19,6 +19,7 @@ import {
   renderBubble,
   _renderComposer,
 } from './chat';
+import DefaultValues from '../../../utils/constants/defaultValues';
 
 export default function ChatRoom() {
   const params: any = useRoute().params;
@@ -29,6 +30,14 @@ export default function ChatRoom() {
   const [timer, setTimer] = useState(0);
   const [blocked, setBlocked] = useState(false);
   const {uid, name, blockList} = useSelector((state: any) => state.authReducer);
+  const authReducer = useSelector((state: any) => state.authReducer);
+  // const [isBlocked, setIsBlock] = useState(
+  //   blockList.findIndex((item: any) => item.id === uid),
+  // );
+  const isBlocked = useMemo(
+    () => blockList.findIndex((item: any) => item.id === uid),
+    [blockList],
+  );
 
   useEffect(() => {
     const typingListener = CommonFunctions.getTypingStatus(
@@ -42,17 +51,24 @@ export default function ChatRoom() {
     return () => typingListener;
   }, []);
 
+  // const isBlocked = useMemo(
+  //   () => blockList.findIndex((item: any) => item.id === uid),
+  //   [blockList],
+  // );
+
   useEffect(() => {
     const BlockListListener = firestore()
       .collection('Users')
       .doc(receiverId)
       .collection('BlockList')
       .onSnapshot((documentSnapshot: any) => {
-        let temp = documentSnapshot.docs.map((item: any) => item.data());
-        if (temp.find((element: any) => element.id === uid)) {
-          setBlocked(true);
-        } else {
-          setBlocked(false);
+        if (documentSnapshot.docs) {
+          let temp = documentSnapshot.docs.map((item: any) => item.data());
+          if (temp.find((element: any) => element.id === uid)) {
+            setBlocked(true);
+          } else {
+            setBlocked(false);
+          }
         }
       });
 
@@ -60,8 +76,10 @@ export default function ChatRoom() {
   }, []);
 
   useEffect(() => {
-    // let createdAt = firestore().collection('Chats').doc(roomid).get();
     CommonFunctions.batchUpdate(roomid, uid, receiverId, chat[roomid]);
+  }, [chat[roomid]]);
+
+  useEffect(() => {
     CommonFunctions.getChatSnapshot(roomid, (documentSnapshot: any) => {
       if (documentSnapshot) {
         let tempfilter = documentSnapshot.docs
@@ -84,9 +102,11 @@ export default function ChatRoom() {
         );
         if (chat[0]) {
           CommonFunctions.updateInbox(uid, receiverId, {
+            avatar: avatar,
             lastMsg: tempfilter[0],
           });
           CommonFunctions.updateInbox(receiverId, uid, {
+            avatar: authReducer.avatar,
             lastMsg: tempfilter[0],
           });
         }
@@ -180,6 +200,7 @@ export default function ChatRoom() {
       lastMsg: {...messages[0], sent: true, received: false},
     });
     CommonFunctions.updateInbox(receiverId, uid, {
+      avatar: authReducer.avatar,
       lastMsg: {...messages[0], sent: true, received: false},
     });
     CommonFunctions.addMessage(roomid, messages);
@@ -210,6 +231,7 @@ export default function ChatRoom() {
     return index !== -1 ? (
       <TouchableOpacity
         style={styles.footerCont}
+        activeOpacity={DefaultValues.activeOpacity}
         onPress={() => CommonFunctions.unBlockContact(receiverId, uid)}>
         <Text style={styles.footerText}>{Strings.unblock}</Text>
       </TouchableOpacity>
@@ -324,7 +346,7 @@ export default function ChatRoom() {
               : getStatusBarHeight() + 45,
         }}
         onLongPress={onMessageLongPress}
-        isTyping={isTyping}
+        isTyping={blocked || isBlocked !== -1 ? false : isTyping}
         renderAvatar={null}
         onInputTextChanged={onChangeText}
         renderComposer={_renderComposer}

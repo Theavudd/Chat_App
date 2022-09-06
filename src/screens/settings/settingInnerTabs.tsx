@@ -7,7 +7,7 @@ interface Props {
   Image: any;
   header: string;
   subHeader?: string;
-  onPress: Function;
+  onPress: any;
 }
 
 export default function SettingInnerTabs(props: Props) {

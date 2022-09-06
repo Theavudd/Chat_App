@@ -21,7 +21,7 @@ export default function ContactList() {
       .collection('Users')
       .onSnapshot((documentSnapshot: any) => {
         setLoading(true);
-        let userDetails = documentSnapshot.docs.map(async (item: any) => {
+        let userDetails = documentSnapshot?.docs.map(async (item: any) => {
           let roomId;
           if (item.id < uid) {
             roomId = item.id + uid;
@@ -38,10 +38,18 @@ export default function ContactList() {
             data: item.data(),
           };
         });
-        Promise.all(userDetails).then((response: any) => {
-          console.log('res', response);
-          dispatch({type: 'Auth/updateUsers', payload: response});
-        });
+
+        Promise.all(userDetails)
+          .then((response: any) => {
+            console.log('res', response);
+            const index = response.findIndex(
+              (item: any) => item.data.id === uid,
+            );
+            let temp = response;
+            temp.splice(index, 1);
+            dispatch({type: 'Auth/updateUsers', payload: temp});
+          })
+          .catch((err: any) => console.log('error', err));
         setLoading(false);
       });
     return () => subscriber();
@@ -64,7 +72,6 @@ export default function ContactList() {
 
   const renderUsers = useCallback(
     ({item}: any) => {
-      console.log('item', item?.avatar);
       if (item?.data?.id !== uid) {
         return (
           <View style={styles.contactContainer}>

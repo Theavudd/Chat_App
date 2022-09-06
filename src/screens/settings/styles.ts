@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
   innerSettingContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+    width: '90%',
   },
   settingTabIconCont: {
     height: vh(56),

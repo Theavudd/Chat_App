@@ -7,6 +7,7 @@ import {
   requestUserPermission,
   notificationListener,
 } from './src/utils/notificationServices';
+import {LogBox} from 'react-native';
 
 export default function App() {
   useEffect(() => {
@@ -14,7 +15,7 @@ export default function App() {
     notificationListener();
   }, []);
 
-  // LogBox.ignoreLogs(['redux-persist']);
+  LogBox.ignoreAllLogs();
 
   return (
     <Provider store={store}>

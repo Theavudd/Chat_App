@@ -339,6 +339,19 @@ const deleteForMe = (
   receiverId: any,
   chat: any,
 ) => {
+  if (chat.length > 0) {
+    if (message._id === chat[0]._id) {
+      if (chat[1]) {
+        updateInbox(uid, receiverId, {
+          lastMsg: chat[1],
+        });
+      } else {
+        updateInbox(uid, receiverId, {
+          lastMsg: {...chat[1], text: ''},
+        });
+      }
+    }
+  }
   firestore()
     .collection('Chats')
     .doc(roomid)
@@ -350,7 +363,7 @@ const deleteForMe = (
     })
     .then(() => {
       if (chat.length > 0) {
-        if (message._id === chat._id) {
+        if (message._id === chat[0]._id) {
           if (chat[1]) {
             updateInbox(uid, receiverId, {
               lastMsg: chat[1],

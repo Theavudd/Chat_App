@@ -127,9 +127,11 @@ export default function Header(props: Props) {
       </TouchableOpacity>
       <View style={styles.nameContainer}>
         <Text style={styles.titleText}>{props?.title}</Text>
-        {online && !props.blocked && (
-          <Text style={styles.subTitleText}>{Strings.online}</Text>
-        )}
+        {online
+          ? !props.blocked && (
+              <Text style={styles.subTitleText}>{Strings.online}</Text>
+            )
+          : null}
       </View>
       <TouchableOpacity
         style={styles.phoneIconCont}
