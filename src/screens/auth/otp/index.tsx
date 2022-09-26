@@ -72,6 +72,8 @@ export default function OTP() {
     };
   };
 
+  console.log('uid', uid);
+
   const verifyOtp = () => {
     setLoading(true);
     dispatch(
