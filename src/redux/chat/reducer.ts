@@ -19,6 +19,10 @@ const ChatSlice = createSlice({
       const {payload} = action;
       state.chat[payload.roomid] = payload.data;
     },
+    editPermissions: (state: any, action) => {
+      const {payload} = action;
+      state.permission = payload;
+    },
   },
 });
 export default ChatSlice.reducer;

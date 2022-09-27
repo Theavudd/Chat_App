@@ -12,6 +12,7 @@ import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import CommonFunctions from '../../../utils/CommonFunctions';
 import {useSelector} from 'react-redux';
+import Call from '../../../components/audioVideoCall/modules/call';
 
 interface Props {
   title?: any;
@@ -131,7 +132,18 @@ export default function Header(props: Props) {
           <Text style={styles.subTitleText}>{Strings.online}</Text>
         )}
       </View>
-      <TouchableOpacity
+      <Call
+        config={{
+          appId: '8c7c96fa8c0546db919c842a796cff88',
+          channelId: props.roomid,
+          token: 'sadas',
+        }}
+        audioCallIconStyle={{tintColor: 'white'}}
+        videoCallIconStyle={{tintColor: 'white'}}
+        profileName={props?.title}
+        profileImage={props?.image ? props.image : DefaultValues.defaultImage}
+      />
+      {/* <TouchableOpacity
         style={styles.phoneIconCont}
         activeOpacity={DefaultValues.activeOpacity}>
         <Image
@@ -139,7 +151,7 @@ export default function Header(props: Props) {
           resizeMode={'contain'}
           style={styles.phoneIcon}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
         style={styles.videoCameraIconCont}
         onPress={onOptionPress}
@@ -184,7 +196,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Regular,
     color: Color.white,
     marginRight: vw(15),
-    width: vw(170),
+    width: vw(130),
   },
   phoneIconCont: {
     height: vh(19),
