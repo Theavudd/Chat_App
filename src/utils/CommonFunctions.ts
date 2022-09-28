@@ -386,6 +386,26 @@ const clearChat = (roomid: string, uid: string, receiverId: string) => {
 };
 
 /**
+ * @function randomChatID
+ * @description function to create message id
+ * @returns string
+ */
+
+export const randomChatID = () => {
+  return (
+    Date.now().toString(36) +
+    '-' +
+    Math.random().toString(36).slice(0, 5) +
+    '-' +
+    Math.random().toString(36).slice(0, 5) +
+    '-' +
+    Math.random().toString(36).slice(0, 5) +
+    '-' +
+    Math.random().toString(36)
+  ).replace(/\./g, '');
+};
+
+/**
  * @exports
  * @description
  */
@@ -405,4 +425,5 @@ export default {
   deleteForMe,
   addMessage,
   clearChat,
+  randomChatID,
 };

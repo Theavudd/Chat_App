@@ -1,7 +1,8 @@
 import axios from 'axios';
+
 const BASE_URL = 'https://callapp-rcc.herokuapp.com/rtc/';
 
-const getToken = (
+export const getToken = (
   channelName: string,
   uid: string,
   successCallback: Function,
@@ -12,5 +13,3 @@ const getToken = (
     .then((res: any) => successCallback(res))
     .catch((error: any) => failureCallback(error));
 };
-
-export default {getToken};
