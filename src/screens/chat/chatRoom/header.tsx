@@ -10,9 +10,10 @@ import Strings from '../../../utils/constants/strings';
 import firestore from '@react-native-firebase/firestore';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
-import CommonFunctions from '../../../utils/CommonFunctions';
+import CommonFunctions, {showSnackBar} from '../../../utils/CommonFunctions';
 import {useSelector} from 'react-redux';
 import Call from '../../../components/audioVideoCall/modules/call';
+import {getToken} from '../../../components/audioVideoCall/utils/services';
 
 interface Props {
   title?: any;
@@ -22,13 +23,16 @@ interface Props {
   receiverId: string;
   id: string;
   blocked: boolean;
+  sendCallMessage: any;
 }
 
 export default function Header(props: Props) {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
-  const {blockList} = useSelector((state: any) => state.authReducer);
+  const {blockList, name, uid} = useSelector((state: any) => state.authReducer);
+  const {chat} = useSelector((state: any) => state.chatReducer);
   const [online, setOnline] = useState(false);
+  const [token, setToken] = useState('');
   const onBackPress = () => {
     navigation.goBack();
   };
@@ -103,6 +107,56 @@ export default function Header(props: Props) {
     }
   };
 
+  const callStatus = useMemo(() => {
+    let connectionStatus = false;
+    chat[props.roomid].map((item: any) => {
+      console.log('connected', item);
+      if (item.connected) {
+        connectionStatus = item.connected;
+      }
+    });
+    return connectionStatus;
+  }, [chat, props.roomid]);
+
+  const onCallPress = () => {
+    console.log('connected', chat[props.roomid][0]?.connected);
+    console.log('token', chat[props.roomid][0].token);
+    if (callStatus) {
+      console.log('callToken', chat[props.roomid][0].token);
+      setToken(chat[props.roomid][0].token);
+    } else {
+      getToken(
+        props.roomid,
+        props.id,
+        (response: any) => {
+          setToken(response.data?.rtcToken);
+        },
+        (error: any) => {
+          showSnackBar(error.message);
+        },
+      );
+      props.sendCallMessage([
+        {
+          _id: CommonFunctions.randomChatID(),
+          createdAt: new Date().getTime(),
+          deleteBy: '',
+          deleteForEveryone: false,
+          received: false,
+          sent: true,
+          token: token,
+          connected: true,
+          text: `${name} started a call`,
+          user: {
+            name: `${name}`,
+            _id: uid,
+          },
+        },
+      ]);
+    }
+  };
+
+  const onEndCall = () => {};
+
   return (
     <View style={[styles.container, props?.style]}>
       <TouchableOpacity
@@ -136,22 +190,16 @@ export default function Header(props: Props) {
         config={{
           appId: '8c7c96fa8c0546db919c842a796cff88',
           channelId: props.roomid,
-          token: 'sadas',
+          token: token,
         }}
-        audioCallIconStyle={{tintColor: 'white'}}
-        videoCallIconStyle={{tintColor: 'white'}}
+        onEndCall={onEndCall}
+        onVideoCallPress={onCallPress}
+        onAudioCallPress={onCallPress}
+        audioCallIconStyle={styles.audioCallIcon}
+        videoCallIconStyle={styles.videoCallIcon}
         profileName={props?.title}
         profileImage={props?.image ? props.image : DefaultValues.defaultImage}
       />
-      {/* <TouchableOpacity
-        style={styles.phoneIconCont}
-        activeOpacity={DefaultValues.activeOpacity}>
-        <Image
-          source={LocalImages.phone}
-          resizeMode={'contain'}
-          style={styles.phoneIcon}
-        />
-      </TouchableOpacity> */}
       <TouchableOpacity
         style={styles.videoCameraIconCont}
         onPress={onOptionPress}
@@ -243,5 +291,11 @@ const styles = StyleSheet.create({
     color: Color.white,
     fontFamily: Fonts.Regular,
     fontSize: vw(14),
+  },
+  audioCallIcon: {
+    tintColor: Color.white,
+  },
+  videoCallIcon: {
+    tintColor: Color.white,
   },
 });

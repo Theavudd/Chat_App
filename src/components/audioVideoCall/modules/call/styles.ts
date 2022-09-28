@@ -3,6 +3,23 @@ import {vh, vw} from '../../utils/Dimension';
 
 export const styles = StyleSheet.create({
   container: {},
+  profileImageContainer: {
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  imageBackgroundContainer: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+  },
+  profileIconImage: {
+    width: '100%',
+    resizeMode: 'contain',
+    backgroundColor: 'white',
+  },
   userImg: {
     height: '100%',
     width: '100%',

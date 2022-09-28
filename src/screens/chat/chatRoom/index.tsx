@@ -153,6 +153,7 @@ export default function ChatRoom() {
   }, [roomid]);
 
   const onSend = (messages: any) => {
+    console.log('messaf', messages);
     messages[0].createdAt = new Date().getTime();
     let newArray = GiftedChat.append(chat[roomid], messages);
     dispatch({
@@ -194,6 +195,7 @@ export default function ChatRoom() {
         roomid={roomid}
         id={uid}
         blocked={blocked}
+        sendCallMessage={(messages: any) => onSend(messages)}
         style={[
           styles.chatHeader,
           {
