@@ -5,7 +5,6 @@ import {
   ImageStyle,
   PermissionsAndroid,
   Platform,
-  SafeAreaView,
   StyleProp,
   Text,
   TouchableOpacity,
@@ -48,6 +47,9 @@ interface CallProps {
   videoCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Video Icon Styling
   profileName: string; //Name of the Profile
   profileImage: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
+  onAudioCallPress: Function; //Generate audio Call token here
+  onVideoCallPress: Function; //Generate Video Call token here
+  onEndCall: Function; // Runs when the call is ended
 }
 
 export default function Call(props: CallProps) {
@@ -63,8 +65,6 @@ export default function Call(props: CallProps) {
   const [switchCamera, setSwitchCamera] = useState(false);
 
   let _engine = useRef<RtcEngine | null>(null);
-
-  console.log('image', props.profileImage);
 
   const _initEngine = async () => {
     if (Platform.OS === 'android') {
@@ -87,36 +87,30 @@ export default function Call(props: CallProps) {
   };
 
   const _addListeners = () => {
-    _engine.current?.addListener('Warning', (warningCode: any) => {
-      console.info('Warning', warningCode);
-    });
-    _engine.current?.addListener('Error', (errorCode: any) => {
-      console.info('Error', errorCode);
-    });
+    _engine.current?.addListener('Warning', (warningCode: any) => {});
+    _engine.current?.addListener('Error', (errorCode: any) => {});
     _engine.current?.addListener(
       'JoinChannelSuccess',
       (channel: any, uid: any, elapsed: any) => {
-        console.info('JoinChannelSuccess', channel, uid, elapsed);
         setJoined(true);
       },
     );
     _engine.current?.addListener('LeaveChannel', (stats: any) => {
-      console.info('LeaveChannel', stats);
       setJoined(false);
       setRemoteUid([]);
     });
     _engine.current?.addListener('UserJoined', (uid: any, elapsed: any) => {
-      console.info('UserJoined', uid, elapsed);
       setRemoteUid([...remoteUid, uid]);
     });
     _engine.current?.addListener('UserOffline', (uid: any, reason: any) => {
-      console.info('UserOffline', uid, reason);
       setRemoteUid(remoteUid.filter((value: any) => value !== uid));
     });
   };
 
   const _joinVideoChannel = async () => {
     try {
+      setJoined(true);
+      await props.onVideoCallPress();
       await _engine.current?.joinChannel(
         props.config.token,
         props.config.channelId,
@@ -124,7 +118,6 @@ export default function Call(props: CallProps) {
         0,
       );
       setCamera(true);
-      setJoined(true);
       setConnected(true);
       await _engine.current?.enableVideo();
     } catch (error: any) {
@@ -134,6 +127,8 @@ export default function Call(props: CallProps) {
 
   const _joinAudioChannel = async () => {
     try {
+      setJoined(true);
+      await props.onAudioCallPress();
       await _engine.current?.joinChannel(
         props.config.token,
         props.config.channelId,
@@ -153,7 +148,6 @@ export default function Call(props: CallProps) {
     _initEngine();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log('remoteUid', remoteUid);
 
   useEffect(() => {
     return () => {
@@ -163,9 +157,11 @@ export default function Call(props: CallProps) {
 
   const _leaveChannel = async () => {
     try {
+      setJoined(false);
       await _engine.current?.leaveChannel();
       setConnected(false);
       await _engine.current?.disableVideo();
+      await props.onEndCall();
     } catch (error: any) {
       showSnackBar(error.message);
     }
@@ -179,13 +175,11 @@ export default function Call(props: CallProps) {
       })
       .catch((error: any) => {
         showSnackBar(error.message);
-        console.warn('switchCamera', error);
       });
   };
 
   const _switchRender = () => {
     setSwitchRender(!switchRender);
-    console.log('pressed');
     setRemoteUid(remoteUid.reverse());
   };
 
@@ -193,21 +187,10 @@ export default function Call(props: CallProps) {
     return (
       <View style={styles.container}>
         {isAudioCall ? (
-          <View
-            style={{
-              height: '100%',
-              width: '100%',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'white',
-            }}>
+          <View style={styles.profileImageContainer}>
             <Image
               source={props.profileImage}
-              style={{
-                width: '100%',
-                resizeMode: 'contain',
-                backgroundColor: 'white',
-              }}
+              style={styles.profileIconImage}
               blurRadius={10}
             />
           </View>
@@ -274,19 +257,21 @@ export default function Call(props: CallProps) {
   };
 
   return (
-    // <SafeAreaView style={styles.container}>
     <View style={styles.buttonsContainer}>
       <Modal
         isVisible={isJoined}
         animationIn={'lightSpeedIn'}
         animationOut={'lightSpeedOut'}
         style={styles.modalView}>
-        <ImageBackground
-          source={{uri: props?.profileImage}}
-          style={{height: '100%', width: '100%', position: 'absolute'}}
-          blurRadius={7}
-        />
-        {_renderVideo()}
+        {remoteUid.length === 0 ? (
+          <ImageBackground
+            source={{uri: props?.profileImage}}
+            style={styles.imageBackgroundContainer}
+            blurRadius={7}
+          />
+        ) : (
+          _renderVideo()
+        )}
         <View style={styles.profileContainer}>
           <Image
             source={{uri: props?.profileImage}}
@@ -361,6 +346,5 @@ export default function Call(props: CallProps) {
         onPressFunction={_joinVideoChannel}
       />
     </View>
-    // </SafeAreaView>
   );
 }
