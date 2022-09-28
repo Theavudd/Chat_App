@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		007493E1F39743BCB654A25D /* Geometria-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE139A3539A34207866B730B /* Geometria-Light.ttf */; };
 		00E356F31AD99517003FC87E /* ChatAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ChatAppTests.m */; };
-		0CCF1E3428B7981400AA7C57 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0CCF1E3328B7981400AA7C57 /* GoogleService-Info.plist */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -20,6 +19,7 @@
 		743010D11A534378A6325454 /* Geometria.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7238F9000A604FAE8BBD005D /* Geometria.ttf */; };
 		7BB41300A25D4285BCB5E162 /* Geometria-HeavyItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5060C849E9FE41C388E1AAE7 /* Geometria-HeavyItalic.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8414284628E40B2600EFF401 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8414284528E40B2600EFF401 /* GoogleService-Info.plist */; };
 		940E8801391F4C8C90FAEECC /* Geometria-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2EF37B5A307B485685109C8C /* Geometria-BoldItalic.ttf */; };
 		A3926B6911DC4CDF83C97B14 /* Geometria-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 689A6079C7DD4F38B87621B8 /* Geometria-ExtraLight.ttf */; };
 		B6245E635C7B56A86E77754A /* Pods_ChatApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20CCB7973FE9EDD03F16A8BE /* Pods_ChatApp.framework */; };
@@ -48,7 +48,6 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ChatAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatAppTests.m; sourceTree = "<group>"; };
 		095B32CF4D18435EBA68DD67 /* Geometria-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-Thin.ttf"; path = "../src/assets/fonts/Geometria-Thin.ttf"; sourceTree = "<group>"; };
-		0CCF1E3328B7981400AA7C57 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0E77B6D58D854395907EEE0E /* Geometria-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-LightItalic.ttf"; path = "../src/assets/fonts/Geometria-LightItalic.ttf"; sourceTree = "<group>"; };
 		1284F7C32C394104B27A8801 /* Geometria-Heavy.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-Heavy.ttf"; path = "../src/assets/fonts/Geometria-Heavy.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -69,6 +68,7 @@
 		6DA5EBC619C66480CAEE5656 /* Pods_ChatApp_ChatAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatApp_ChatAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7238F9000A604FAE8BBD005D /* Geometria.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Geometria.ttf; path = ../src/assets/fonts/Geometria.ttf; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ChatApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8414284528E40B2600EFF401 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8D80D5B79D88481ABFDE180C /* Geometria-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/Geometria-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		BEA2F390BC424D12ABEC66A4 /* Geometria-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-ThinItalic.ttf"; path = "../src/assets/fonts/Geometria-ThinItalic.ttf"; sourceTree = "<group>"; };
 		C02BA811324949838AE8E623 /* Geometria-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Geometria-ExtraLightItalic.ttf"; path = "../src/assets/fonts/Geometria-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
@@ -150,7 +150,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				0CCF1E3328B7981400AA7C57 /* GoogleService-Info.plist */,
+				8414284528E40B2600EFF401 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* ChatApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ChatAppTests */,
@@ -313,7 +313,7 @@
 				2BE0AA6C0BD4407B9010DA73 /* Geometria-Heavy.ttf in Resources */,
 				7BB41300A25D4285BCB5E162 /* Geometria-HeavyItalic.ttf in Resources */,
 				CB22A8C5EB944507BF09677A /* Geometria-Italic.ttf in Resources */,
-				0CCF1E3428B7981400AA7C57 /* GoogleService-Info.plist in Resources */,
+				8414284628E40B2600EFF401 /* GoogleService-Info.plist in Resources */,
 				007493E1F39743BCB654A25D /* Geometria-Light.ttf in Resources */,
 				B7DD08359F1D4471AAF61D05 /* Geometria-LightItalic.ttf in Resources */,
 				BF5F9AC57D8441798FDA1509 /* Geometria-Medium.ttf in Resources */,
