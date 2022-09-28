@@ -47,6 +47,33 @@ export default function Header(props: Props) {
 
     return () => activeListener();
   });
+  const callStatus = useMemo(() => {
+    if (chat[props.roomid]) {
+      if (chat[props?.roomid][0]) {
+        return chat[props?.roomid][0]?.connected;
+      }
+    }
+    return false;
+  }, [chat, props?.roomid]);
+  console.log('token', token);
+
+  useEffect(() => {
+    if (callStatus) {
+      setToken(chat[props.roomid][0].token);
+    } else {
+      getToken(
+        'test-roomid',
+        'test-id',
+        (response: any) => {
+          setToken(response.data?.rtcToken);
+        },
+        (error: any) => {
+          showSnackBar(error.message);
+        },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [callStatus]);
 
   const isBlocked = useMemo(
     () => blockList.findIndex((item: any) => item.id === props.receiverId),
@@ -107,55 +134,37 @@ export default function Header(props: Props) {
     }
   };
 
-  const callStatus = useMemo(() => {
-    let connectionStatus = false;
-    chat[props.roomid].map((item: any) => {
-      console.log('connected', item);
-      if (item.connected) {
-        connectionStatus = item.connected;
-      }
-    });
-    return connectionStatus;
-  }, [chat, props.roomid]);
-
   const onCallPress = () => {
-    console.log('connected', chat[props.roomid][0]?.connected);
-    console.log('token', chat[props.roomid][0].token);
-    if (callStatus) {
-      console.log('callToken', chat[props.roomid][0].token);
-      setToken(chat[props.roomid][0].token);
-    } else {
-      getToken(
-        props.roomid,
-        props.id,
-        (response: any) => {
-          setToken(response.data?.rtcToken);
+    props.sendCallMessage([
+      {
+        _id: CommonFunctions.randomChatID(),
+        createdAt: new Date().getTime(),
+        deleteBy: '',
+        deleteForEveryone: false,
+        received: false,
+        sent: true,
+        token: token,
+        type: 'video',
+        connected: true,
+        text: `${name} started a call`,
+        user: {
+          name: `${name}`,
+          _id: uid,
         },
-        (error: any) => {
-          showSnackBar(error.message);
-        },
-      );
-      props.sendCallMessage([
-        {
-          _id: CommonFunctions.randomChatID(),
-          createdAt: new Date().getTime(),
-          deleteBy: '',
-          deleteForEveryone: false,
-          received: false,
-          sent: true,
-          token: token,
-          connected: true,
-          text: `${name} started a call`,
-          user: {
-            name: `${name}`,
-            _id: uid,
-          },
-        },
-      ]);
-    }
+      },
+    ]);
   };
 
-  const onEndCall = () => {};
+  const onEndCall = () => {
+    firestore()
+      .collection('Chats')
+      .doc(props.roomid)
+      .collection('Messages')
+      .doc(chat[props.roomid][0]._id)
+      .update({
+        connected: false,
+      });
+  };
 
   return (
     <View style={[styles.container, props?.style]}>
@@ -189,9 +198,11 @@ export default function Header(props: Props) {
       <Call
         config={{
           appId: '8c7c96fa8c0546db919c842a796cff88',
-          channelId: props.roomid,
+          channelId: 'test-roomid',
           token: token,
         }}
+        callStatus={callStatus}
+        type={'video'}
         onEndCall={onEndCall}
         onVideoCallPress={onCallPress}
         onAudioCallPress={onCallPress}
