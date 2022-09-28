@@ -154,9 +154,7 @@ export default function ChatRoom() {
   }, [roomid]);
 
   const onSend = (messages: any) => {
-    if (!messages[0].connected) {
-      setCallMessageIndex(callIndex + 1);
-    }
+    console.log('messaf', messages);
     messages[0].createdAt = new Date().getTime();
     let newArray = GiftedChat.append(chat[roomid], messages);
     dispatch({

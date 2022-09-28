@@ -96,9 +96,7 @@ export default function Call(props: CallProps) {
   };
 
   const _addListeners = () => {
-    _engine.current?.addListener('Warning', (warningCode: any) => {
-      console.info('Warning', warningCode);
-    });
+    _engine.current?.addListener('Warning', (warningCode: any) => {});
     _engine.current?.addListener('Error', (errorCode: any) => {
       console.info('Error', errorCode);
       if (errorCode == 1501) {
@@ -180,6 +178,7 @@ export default function Call(props: CallProps) {
       await _engine.current?.leaveChannel();
       setConnected(false);
       await _engine.current?.disableVideo();
+      await props.onEndCall();
     } catch (error: any) {
       showSnackBar(error.message);
     }
