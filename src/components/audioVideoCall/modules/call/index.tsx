@@ -37,11 +37,11 @@ interface config {
 
 interface CallProps {
   config: config; // Config file for Agora
-  joinScreenContainerStyle?: StyleProp<ViewStyle> | 'undefined'; // Join Screen Container Style
-  imageContainerStyle?: StyleProp<ViewStyle> | 'undefined'; //(Optional) Image Container Style Object
-  imageStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Image Style Object
-  videoIconContainerStyle?: StyleProp<ViewStyle> | 'undefined'; //(Optional) Video Icon Container Style
-  audioIconContainerStyle?: StyleProp<ViewStyle> | 'undefined'; //(Optional) Video Icon Container Style
+  joinScreenContainerStyle?: StyleProp<ViewStyle> | undefined; // Join Screen Container Style
+  imageContainerStyle?: StyleProp<ViewStyle> | undefined; //(Optional) Image Container Style Object
+  imageStyle?: StyleProp<ImageStyle> | undefined; //(Optional) Image Style Object
+  videoIconContainerStyle?: StyleProp<ViewStyle> | undefined; //(Optional) Video Icon Container Style
+  audioIconContainerStyle?: StyleProp<ViewStyle> | undefined; //(Optional) Video Icon Container Style
   videoCallIcon?: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
   audioCallIcon?: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
   audioCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Audio Icon Styling
@@ -74,7 +74,13 @@ export default function Call(props: CallProps) {
       await PermissionsAndroid.requestMultiple([
         'android.permission.RECORD_AUDIO',
         'android.permission.CAMERA',
-      ]);
+      ])
+        .then(resp => {
+          console.log('response', resp);
+        })
+        .catch(err => {
+          console.log('error occured', err);
+        });
     }
 
     _engine.current = await RtcEngine.createWithContext(
@@ -90,8 +96,17 @@ export default function Call(props: CallProps) {
   };
 
   const _addListeners = () => {
-    _engine.current?.addListener('Warning', (warningCode: any) => {});
-    _engine.current?.addListener('Error', (errorCode: any) => {});
+    _engine.current?.addListener('Warning', (warningCode: any) => {
+      console.info('Warning', warningCode);
+    });
+    _engine.current?.addListener('Error', (errorCode: any) => {
+      console.info('Error', errorCode);
+      if (errorCode == 1501) {
+        showSnackBar(
+          'Camera and Microphone access is not granted. Please provide permission from settings',
+        );
+      }
+    });
     _engine.current?.addListener(
       'JoinChannelSuccess',
       (channel: any, uid: any, elapsed: any) => {
