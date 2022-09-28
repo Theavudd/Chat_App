@@ -9,7 +9,7 @@ export const getToken = (
   failureCallback: Function,
 ) => {
   axios
-    .get(`${BASE_URL}${channelName}/publisher/uid/${uid}/?expiry=`)
+    .get(`${BASE_URL}${channelName}/publisher/uid/0/?expiry=`)
     .then((res: any) => successCallback(res))
     .catch((error: any) => failureCallback(error));
 };

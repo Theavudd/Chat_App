@@ -26,6 +26,7 @@ export default function ChatRoom() {
   const dispatch = useDispatch<any>();
   const [isTyping, setTyping] = useState(false);
   const {chat} = useSelector((state: any) => state.chatReducer);
+  const [callIndex, setCallMessageIndex]: any = useState(0);
   const [timer, setTimer] = useState(0);
   const [blocked, setBlocked] = useState(false);
   const {uid, name, blockList} = useSelector((state: any) => state.authReducer);
@@ -153,7 +154,9 @@ export default function ChatRoom() {
   }, [roomid]);
 
   const onSend = (messages: any) => {
-    console.log('messaf', messages);
+    if (!messages[0].connected) {
+      setCallMessageIndex(callIndex + 1);
+    }
     messages[0].createdAt = new Date().getTime();
     let newArray = GiftedChat.append(chat[roomid], messages);
     dispatch({
@@ -327,7 +330,7 @@ export default function ChatRoom() {
         }}
         onLongPress={onMessageLongPress}
         isTyping={isTyping}
-        renderAvatar={null}
+        renderAvatar={undefined}
         onInputTextChanged={onChangeText}
         renderComposer={_renderComposer}
         scrollToBottom
