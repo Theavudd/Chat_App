@@ -1,5 +1,6 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {
+  Button,
   Image,
   ImageBackground,
   ImageStyle,
@@ -47,9 +48,11 @@ interface CallProps {
   videoCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Video Icon Styling
   profileName: string; //Name of the Profile
   profileImage: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
+  callStatus: boolean; //status of call on recievers end
   onAudioCallPress: Function; //Generate audio Call token here
   onVideoCallPress: Function; //Generate Video Call token here
   onEndCall: Function; // Runs when the call is ended
+  type: string; //container type of call 'audio' or 'video'
 }
 
 export default function Call(props: CallProps) {
@@ -158,10 +161,10 @@ export default function Call(props: CallProps) {
   const _leaveChannel = async () => {
     try {
       setJoined(false);
+      props.onEndCall();
       await _engine.current?.leaveChannel();
       setConnected(false);
       await _engine.current?.disableVideo();
-      await props.onEndCall();
     } catch (error: any) {
       showSnackBar(error.message);
     }
@@ -255,23 +258,35 @@ export default function Call(props: CallProps) {
       showSnackBar(error.message);
     }
   };
+  console.log('remoteUid', remoteUid);
 
   return (
     <View style={styles.buttonsContainer}>
+      <Modal isVisible={props.callStatus} style={styles.modalView}>
+        <View>
+          <Button
+            title="JOIN"
+            onPress={
+              props.type === 'audio' ? _joinAudioChannel : _joinVideoChannel
+            }
+          />
+          <Button title="End" />
+        </View>
+      </Modal>
       <Modal
         isVisible={isJoined}
         animationIn={'lightSpeedIn'}
         animationOut={'lightSpeedOut'}
         style={styles.modalView}>
-        {remoteUid.length === 0 ? (
+        {/* {remoteUid.length === 0 ? (
           <ImageBackground
             source={{uri: props?.profileImage}}
             style={styles.imageBackgroundContainer}
             blurRadius={7}
           />
-        ) : (
-          _renderVideo()
-        )}
+        ) : ( */}
+        {_renderVideo()}
+        {/* )} */}
         <View style={styles.profileContainer}>
           <Image
             source={{uri: props?.profileImage}}
