@@ -47,20 +47,33 @@ export default function Header(props: Props) {
 
     return () => activeListener();
   });
+  const callStatus = useMemo(() => {
+    if (chat[props.roomid]) {
+      if (chat[props?.roomid][0]) {
+        return chat[props?.roomid][0]?.connected;
+      }
+    }
+    return false;
+  }, [chat, props?.roomid]);
+  console.log('token', token);
 
   useEffect(() => {
-    getToken(
-      'test-roomid',
-      'test-id',
-      (response: any) => {
-        setToken(response.data?.rtcToken);
-      },
-      (error: any) => {
-        showSnackBar(error.message);
-      },
-    );
+    if (callStatus) {
+      setToken(chat[props.roomid][0].token);
+    } else {
+      getToken(
+        'test-roomid',
+        'test-id',
+        (response: any) => {
+          setToken(response.data?.rtcToken);
+        },
+        (error: any) => {
+          showSnackBar(error.message);
+        },
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chat[props.roomid]]);
+  }, [callStatus]);
 
   const isBlocked = useMemo(
     () => blockList.findIndex((item: any) => item.id === props.receiverId),
@@ -121,39 +134,25 @@ export default function Header(props: Props) {
     }
   };
 
-  const callStatus = useMemo(() => {
-    if (chat[props.roomid]) {
-      if (chat[props?.roomid][0]) {
-        console.log('sta', chat[props?.roomid][0]?.connected);
-        return chat[props?.roomid][0]?.connected;
-      }
-    }
-    return false;
-  }, [chat, props?.roomid]);
-
   const onCallPress = () => {
-    if (callStatus) {
-      setToken(chat[props.roomid][0].token);
-    } else {
-      props.sendCallMessage([
-        {
-          _id: CommonFunctions.randomChatID(),
-          createdAt: new Date().getTime(),
-          deleteBy: '',
-          deleteForEveryone: false,
-          received: false,
-          sent: true,
-          token: token,
-          type: 'video',
-          connected: true,
-          text: `${name} started a call`,
-          user: {
-            name: `${name}`,
-            _id: uid,
-          },
+    props.sendCallMessage([
+      {
+        _id: CommonFunctions.randomChatID(),
+        createdAt: new Date().getTime(),
+        deleteBy: '',
+        deleteForEveryone: false,
+        received: false,
+        sent: true,
+        token: token,
+        type: 'video',
+        connected: true,
+        text: `${name} started a call`,
+        user: {
+          name: `${name}`,
+          _id: uid,
         },
-      ]);
-    }
+      },
+    ]);
   };
 
   const onEndCall = () => {

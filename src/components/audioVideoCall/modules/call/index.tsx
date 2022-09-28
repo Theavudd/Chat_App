@@ -199,6 +199,13 @@ export default function Call(props: CallProps) {
           </View>
         ) : (
           <>
+            {/* {remoteUid.length === 0 ? (
+          <ImageBackground
+            source={{uri: props?.profileImage}}
+            style={styles.imageBackgroundContainer}
+            blurRadius={7}
+          />
+        ) : ( */}
             {remoteUid !== undefined && (
               <View style={styles.remoteContainer}>
                 {remoteUid.map(
@@ -274,19 +281,11 @@ export default function Call(props: CallProps) {
         </View>
       </Modal>
       <Modal
-        isVisible={isJoined}
+        isVisible={isJoined && props.callStatus}
         animationIn={'lightSpeedIn'}
         animationOut={'lightSpeedOut'}
         style={styles.modalView}>
-        {/* {remoteUid.length === 0 ? (
-          <ImageBackground
-            source={{uri: props?.profileImage}}
-            style={styles.imageBackgroundContainer}
-            blurRadius={7}
-          />
-        ) : ( */}
         {_renderVideo()}
-        {/* )} */}
         <View style={styles.profileContainer}>
           <Image
             source={{uri: props?.profileImage}}
