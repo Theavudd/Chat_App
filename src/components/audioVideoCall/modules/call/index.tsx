@@ -44,15 +44,15 @@ interface CallProps {
   audioIconContainerStyle?: StyleProp<ViewStyle> | 'undefined'; //(Optional) Video Icon Container Style
   videoCallIcon?: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
   audioCallIcon?: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
-  audioCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Video Icon Styling
+  audioCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Audio Icon Styling
   videoCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Video Icon Styling
   profileName: string; //Name of the Profile
   profileImage: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
   callStatus: boolean; //status of call on recievers end
-  onAudioCallPress: Function; //Generate audio Call token here
-  onVideoCallPress: Function; //Generate Video Call token here
-  onEndCall: Function; // Runs when the call is ended
-  type: string; //container type of call 'audio' or 'video'
+  onAudioCallPress?: Function; //Generate audio Call token here
+  onVideoCallPress?: Function; //Generate Video Call token here
+  onEndCall?: Function; // Runs when the call is ended
+  type?: string; //container type of call 'audio' or 'video'
 }
 
 export default function Call(props: CallProps) {
@@ -199,13 +199,6 @@ export default function Call(props: CallProps) {
           </View>
         ) : (
           <>
-            {/* {remoteUid.length === 0 ? (
-          <ImageBackground
-            source={{uri: props?.profileImage}}
-            style={styles.imageBackgroundContainer}
-            blurRadius={7}
-          />
-        ) : ( */}
             {remoteUid !== undefined && (
               <View style={styles.remoteContainer}>
                 {remoteUid.map(
@@ -265,7 +258,7 @@ export default function Call(props: CallProps) {
       showSnackBar(error.message);
     }
   };
-  console.log('remoteUid', remoteUid);
+  console.log('remoteUid', props.callStatus);
 
   return (
     <View style={styles.buttonsContainer}>
@@ -281,11 +274,19 @@ export default function Call(props: CallProps) {
         </View>
       </Modal>
       <Modal
-        isVisible={isJoined && props.callStatus}
+        isVisible={props.callStatus ? isJoined : false}
         animationIn={'lightSpeedIn'}
         animationOut={'lightSpeedOut'}
         style={styles.modalView}>
-        {_renderVideo()}
+        {remoteUid.length === 0 ? (
+          <ImageBackground
+            source={{uri: props?.profileImage}}
+            style={styles.imageBackgroundContainer}
+            blurRadius={7}
+          />
+        ) : (
+          _renderVideo()
+        )}
         <View style={styles.profileContainer}>
           <Image
             source={{uri: props?.profileImage}}
