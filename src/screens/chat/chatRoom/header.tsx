@@ -32,7 +32,7 @@ export default function Header(props: Props) {
   const {blockList, name, uid} = useSelector((state: any) => state.authReducer);
   const {chat} = useSelector((state: any) => state.chatReducer);
   const [online, setOnline] = useState(false);
-  const [type, setType] = useState('');
+  const [type, setType] = useState('audio');
   const [token, setToken] = useState('');
   const onBackPress = () => {
     navigation.goBack();
@@ -178,6 +178,7 @@ export default function Header(props: Props) {
         connected: false,
       });
   };
+  console.log('type', type);
 
   return (
     <View style={[styles.container, props?.style]}>
