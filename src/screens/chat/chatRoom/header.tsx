@@ -32,7 +32,7 @@ export default function Header(props: Props) {
   const {blockList, name, uid} = useSelector((state: any) => state.authReducer);
   const {chat} = useSelector((state: any) => state.chatReducer);
   const [online, setOnline] = useState(false);
-  const [type,setType]=useState('audio')
+  const [type, setType] = useState('audio');
   const [token, setToken] = useState('');
   const onBackPress = () => {
     navigation.goBack();
@@ -135,12 +135,12 @@ export default function Header(props: Props) {
   };
 
   const onVideoCallPress = () => {
-    setType('video')
+    setType('video');
     sendCallMessage('video');
   };
 
   const onAudioCallPress = () => {
-    setType('audio')
+    setType('audio');
     sendCallMessage('audio');
   };
   const sendCallMessage = (callType: string) => {
@@ -156,7 +156,9 @@ export default function Header(props: Props) {
           token: token,
           type: callType,
           connected: true,
-          text: `${name} started ${callType === 'audio' ? 'an' : 'a'} ${callType} call`,
+          text: `${name} started ${
+            callType === 'audio' ? 'an' : 'a'
+          } ${callType} call`,
           user: {
             name: `${name}`,
             _id: uid,
@@ -176,7 +178,7 @@ export default function Header(props: Props) {
         connected: false,
       });
   };
-  console.log('type',type)
+  console.log('type', type);
 
   return (
     <View style={[styles.container, props?.style]}>
