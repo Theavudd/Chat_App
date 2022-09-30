@@ -44,15 +44,15 @@ interface CallProps {
   audioIconContainerStyle?: StyleProp<ViewStyle> | undefined; //(Optional) Video Icon Container Style
   videoCallIcon?: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
   audioCallIcon?: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
-  audioCallIconStyle?: StyleProp<ImageStyle> | undefined; //(Optional) Video Icon Styling
-  videoCallIconStyle?: StyleProp<ImageStyle> | undefined; //(Optional) Video Icon Styling
+  audioCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Audio Icon Styling
+  videoCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Video Icon Styling
   profileName: string; //Name of the Profile
   profileImage: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
   callStatus: boolean; //status of call on recievers end
   onAudioCallPress: Function; //Generate audio Call token here
   onVideoCallPress: Function; //Generate Video Call token here
   onEndCall: Function; // Runs when the call is ended
-  type: 'audio' | 'video'; //container type of call 'audio' or 'video'
+  type?: string; //container type of call 'audio' or 'video'
 }
 
 export default function Call(props: CallProps) {
@@ -61,7 +61,6 @@ export default function Call(props: CallProps) {
   const [speaker, setSpeaker] = useState(false);
   const [isJoined, setJoined] = useState(false);
   const [remoteUid, setRemoteUid] = useState<any>([]);
-  const [isAudioCall, setAudioCall] = useState(false);
   const [isConnected, setConnected] = useState(false);
   const [switchRender, setSwitchRender] = useState(true);
   const [startPreview, setStartPreview] = useState(false);
@@ -121,7 +120,7 @@ export default function Call(props: CallProps) {
   const _joinVideoChannel = async () => {
     try {
       setJoined(true);
-      await props.onVideoCallPress();
+      await props?.onVideoCallPress();
       await _engine.current?.joinChannel(
         props.config.token,
         props.config.channelId,
@@ -139,7 +138,8 @@ export default function Call(props: CallProps) {
   const _joinAudioChannel = async () => {
     try {
       setJoined(true);
-      await props.onAudioCallPress();
+      await props?.onAudioCallPress();
+      await _engine.current?.disableVideo();
       await _engine.current?.joinChannel(
         props.config.token,
         props.config.channelId,
@@ -148,8 +148,6 @@ export default function Call(props: CallProps) {
       );
       setCamera(false);
       setConnected(true);
-      setAudioCall(true);
-      await _engine.current?.disableVideo();
     } catch (error: any) {
       showSnackBar(error.message);
     }
@@ -196,9 +194,10 @@ export default function Call(props: CallProps) {
   };
 
   const _renderVideo = () => {
+    console.log('props.type',props.type == 'audio')
     return (
       <View style={styles.container}>
-        {isAudioCall ? (
+        {props.type == 'audio' ? (
           <View style={styles.profileImageContainer}>
             <Image
               source={props.profileImage}
@@ -208,13 +207,6 @@ export default function Call(props: CallProps) {
           </View>
         ) : (
           <>
-            {/* {remoteUid.length === 0 ? (
-          <ImageBackground
-            source={{uri: props?.profileImage}}
-            style={styles.imageBackgroundContainer}
-            blurRadius={7}
-          />
-        ) : ( */}
             {remoteUid !== undefined && (
               <View style={styles.remoteContainer}>
                 {remoteUid.map(
@@ -260,7 +252,6 @@ export default function Call(props: CallProps) {
     try {
       await _engine.current?.enableLocalVideo(!camera);
       setCamera(!camera);
-      setAudioCall(false);
     } catch (error: any) {
       showSnackBar(error.message);
     }
@@ -274,7 +265,7 @@ export default function Call(props: CallProps) {
       showSnackBar(error.message);
     }
   };
-  console.log('remoteUid', props.config.token);
+  console.log('remoteUid', props.type);
 
   return (
     <View style={styles.buttonsContainer}>
@@ -290,11 +281,19 @@ export default function Call(props: CallProps) {
         </View>
       </Modal>
       <Modal
-        isVisible={isJoined && props.callStatus}
+        isVisible={props.callStatus ? isJoined : false}
         animationIn={'lightSpeedIn'}
         animationOut={'lightSpeedOut'}
         style={styles.modalView}>
-        {_renderVideo()}
+        {remoteUid.length === 0 ? (
+          <ImageBackground
+            source={{uri: props?.profileImage}}
+            style={styles.imageBackgroundContainer}
+            blurRadius={7}
+          />
+        ) : (
+          _renderVideo()
+        )}
         <View style={styles.profileContainer}>
           <Image
             source={{uri: props?.profileImage}}

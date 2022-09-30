@@ -32,6 +32,7 @@ export default function Header(props: Props) {
   const {blockList, name, uid} = useSelector((state: any) => state.authReducer);
   const {chat} = useSelector((state: any) => state.chatReducer);
   const [online, setOnline] = useState(false);
+  const [type,setType]=useState('audio')
   const [token, setToken] = useState('');
   const onBackPress = () => {
     navigation.goBack();
@@ -55,15 +56,14 @@ export default function Header(props: Props) {
     }
     return false;
   }, [chat, props?.roomid]);
-  console.log('token', token);
 
   useEffect(() => {
     if (callStatus) {
       setToken(chat[props.roomid][0].token);
     } else {
       getToken(
-        'test-roomid',
-        'test-id',
+        props.roomid,
+        '0',
         (response: any) => {
           setToken(response.data?.rtcToken);
         },
@@ -134,25 +134,36 @@ export default function Header(props: Props) {
     }
   };
 
-  const onCallPress = () => {
-    props.sendCallMessage([
-      {
-        _id: CommonFunctions.randomChatID(),
-        createdAt: new Date().getTime(),
-        deleteBy: '',
-        deleteForEveryone: false,
-        received: false,
-        sent: true,
-        token: token,
-        type: 'video',
-        connected: true,
-        text: `${name} started a call`,
-        user: {
-          name: `${name}`,
-          _id: uid,
+  const onVideoCallPress = () => {
+    setType('video')
+    sendCallMessage('video');
+  };
+
+  const onAudioCallPress = () => {
+    setType('audio')
+    sendCallMessage('audio');
+  };
+  const sendCallMessage = (callType: string) => {
+    if (!callStatus) {
+      props.sendCallMessage([
+        {
+          _id: CommonFunctions.randomChatID(),
+          createdAt: new Date().getTime(),
+          deleteBy: '',
+          deleteForEveryone: false,
+          received: false,
+          sent: true,
+          token: token,
+          type: callType,
+          connected: true,
+          text: `${name} started ${callType === 'audio' ? 'an' : 'a'} ${callType} call`,
+          user: {
+            name: `${name}`,
+            _id: uid,
+          },
         },
-      },
-    ]);
+      ]);
+    }
   };
 
   const onEndCall = () => {
@@ -165,6 +176,7 @@ export default function Header(props: Props) {
         connected: false,
       });
   };
+  console.log('type',type)
 
   return (
     <View style={[styles.container, props?.style]}>
@@ -198,14 +210,14 @@ export default function Header(props: Props) {
       <Call
         config={{
           appId: '8c7c96fa8c0546db919c842a796cff88',
-          channelId: 'test-roomid',
+          channelId: props.roomid,
           token: token,
         }}
         callStatus={callStatus}
-        type={'video'}
+        type={type}
         onEndCall={onEndCall}
-        onVideoCallPress={onCallPress}
-        onAudioCallPress={onCallPress}
+        onVideoCallPress={onVideoCallPress}
+        onAudioCallPress={onAudioCallPress}
         audioCallIconStyle={styles.audioCallIcon}
         videoCallIconStyle={styles.videoCallIcon}
         profileName={props?.title}

@@ -2,13 +2,14 @@ import {StyleSheet} from 'react-native';
 import {vh, vw} from '../../utils/Dimension';
 
 export const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+  },
   profileImageContainer: {
     height: '100%',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
   },
   imageBackgroundContainer: {
     height: '100%',
@@ -17,6 +18,7 @@ export const styles = StyleSheet.create({
   },
   profileIconImage: {
     width: '100%',
+    height: '90%',
     resizeMode: 'contain',
     backgroundColor: 'white',
   },

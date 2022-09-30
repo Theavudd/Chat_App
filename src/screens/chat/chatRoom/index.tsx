@@ -330,7 +330,7 @@ export default function ChatRoom() {
         }}
         onLongPress={onMessageLongPress}
         isTyping={isTyping}
-        renderAvatar={undefined}
+        renderAvatar={null}
         onInputTextChanged={onChangeText}
         renderComposer={_renderComposer}
         scrollToBottom
