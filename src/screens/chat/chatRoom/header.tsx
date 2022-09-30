@@ -136,14 +136,14 @@ export default function Header(props: Props) {
 
   const onVideoCallPress = () => {
     setType('video');
-    sendCallMessage();
+    sendCallMessage('video');
   };
 
   const onAudioCallPress = () => {
     setType('audio');
-    sendCallMessage();
+    sendCallMessage('audio');
   };
-  const sendCallMessage = () => {
+  const sendCallMessage = (callType: string) => {
     if (!callStatus) {
       props.sendCallMessage([
         {
@@ -154,9 +154,11 @@ export default function Header(props: Props) {
           received: false,
           sent: true,
           token: token,
-          type: type,
+          type: callType,
           connected: true,
-          text: `${name} started ${type === 'audio' ? 'an' : 'a'} ${type} call`,
+          text: `${name} started ${
+            callType === 'audio' ? 'an' : 'a'
+          } ${callType} call`,
           user: {
             name: `${name}`,
             _id: uid,
