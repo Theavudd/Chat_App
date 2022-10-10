@@ -28,6 +28,7 @@ import {showSnackBar} from '../../utils/CommonFunctions';
 
 import FunctionButtons from '../../components/functionButtons';
 import ImageButton from '../../components/ImageButton';
+import { vw } from '../../../../utils/Dimension';
 
 interface config {
   appId: string; // AppID of the App registered on Agora
@@ -73,11 +74,13 @@ export default function Call(props: CallProps) {
       await PermissionsAndroid.requestMultiple([
         'android.permission.RECORD_AUDIO',
         'android.permission.CAMERA',
-      ]).then((resp)=>{
-        console.log('response',resp)
-      }).catch((err)=>{
-        console.log('error occured',err)
-      })
+      ])
+        .then(resp => {
+          console.log('response', resp);
+        })
+        .catch(err => {
+          console.log('error occured', err);
+        });
     }
 
     _engine.current = await RtcEngine.createWithContext(
@@ -95,8 +98,10 @@ export default function Call(props: CallProps) {
   const _addListeners = () => {
     _engine.current?.addListener('Warning', (warningCode: any) => {});
     _engine.current?.addListener('Error', (errorCode: any) => {
-      if (errorCode == 1501){
-        showSnackBar('Camera and Microphone access is not granted. Please provide permission from settings')
+      if (errorCode == 1501) {
+        showSnackBar(
+          'Camera and Microphone access is not granted. Please provide permission from settings',
+        );
       }
     });
     _engine.current?.addListener(
@@ -194,7 +199,7 @@ export default function Call(props: CallProps) {
   };
 
   const _renderVideo = () => {
-    console.log('props.type',props.type == 'audio')
+    console.log('props.type', props.type == 'audio');
     return (
       <View style={styles.container}>
         {props.type == 'audio' ? (
@@ -225,13 +230,11 @@ export default function Call(props: CallProps) {
               </View>
             )}
             {startPreview ? (
-              <>
                 <RtcLocalView.SurfaceView
                   style={styles.local}
                   zOrderMediaOverlay
                   zOrderOnTop
                 />
-              </>
             ) : undefined}
           </>
         )}
@@ -270,14 +273,37 @@ export default function Call(props: CallProps) {
   return (
     <View style={styles.buttonsContainer}>
       <Modal isVisible={props.callStatus} style={styles.modalView}>
-        <View>
-          <Button
-            title="JOIN"
-            onPress={
-              props.type === 'audio' ? _joinAudioChannel : _joinVideoChannel
-            }
-          />
-          <Button title="End" />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'space-evenly',
+            backgroundColor: '#008DA9',
+          }}>
+          <View />
+          <View style={styles.profileContainer}>
+            <Image
+              source={{uri: props?.profileImage}}
+              style={styles.profileImage}
+            />
+            <View style={styles.nameContainer}>
+              <Text style={styles.nameText}>{props?.profileName}</Text>
+              <Text style={styles.connectingText}>{`${
+                isConnected
+                  ? remoteUid.length === 0
+                    ? LocalStrings.ringing
+                    : LocalStrings.connected
+                  : LocalStrings.connecting
+              }`}</Text>
+            </View>
+          </View>
+          <View style={{flexDirection: 'row',justifyContent: 'space-evenly',}} >
+            <TouchableOpacity activeOpacity={0.8} onPress={_leaveChannel} style={{backgroundColor: '#EB5545', height: vw(60), width: vw(60), justifyContent: 'center',alignItems: 'center', borderRadius: vw(30), }} >
+              <Image source={localImages.END_CALL} style={styles.endcallIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.8} onPress={props.type === 'audio' ? _joinAudioChannel : _joinVideoChannel} style={{backgroundColor: '#67CE67', height: vw(60), width: vw(60), justifyContent: 'center',alignItems: 'center', borderRadius: vw(30), }} >
+            <Image source={localImages.END_CALL} style={[styles.endcallIcon,{transform: [{rotate: '-135deg',}],}]} />
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
       <Modal

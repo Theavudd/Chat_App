@@ -6,4 +6,6 @@ export const LocalStrings = {
   connected: 'Connected',
   CameraOff: 'Camera Off',
   connecting: 'Connecting',
+  join: 'Join',
+  end: 'End',
 };
