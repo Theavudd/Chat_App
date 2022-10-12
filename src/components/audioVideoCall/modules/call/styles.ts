@@ -193,4 +193,32 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     top: vh(100),
   },
+  incomingCallView: {
+    flex: 1,
+    justifyContent: 'space-evenly',
+    backgroundColor: '#007890',
+  },
+  callBottonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    height: vh(400),
+    alignItems: 'flex-end',
+  },
+  declineCall: {
+    backgroundColor: '#EB5545',
+    height: vw(60),
+    width: vw(60),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: vw(30),
+  },
+  acceptCall: {
+    backgroundColor: '#67CE67',
+    height: vw(60),
+    width: vw(60),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: vw(30),
+  },
+  rotate: {transform: [{rotate: '-135deg'}]},
 });

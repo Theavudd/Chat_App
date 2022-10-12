@@ -28,7 +28,6 @@ import {showSnackBar} from '../../utils/CommonFunctions';
 
 import FunctionButtons from '../../components/functionButtons';
 import ImageButton from '../../components/ImageButton';
-import { vw } from '../../../../utils/Dimension';
 
 interface config {
   appId: string; // AppID of the App registered on Agora
@@ -38,22 +37,22 @@ interface config {
 
 interface CallProps {
   config: config; // Config file for Agora
-  joinScreenContainerStyle?: StyleProp<ViewStyle> | undefined; // Join Screen Container Style
-  imageContainerStyle?: StyleProp<ViewStyle> | undefined; //(Optional) Image Container Style Object
-  imageStyle?: StyleProp<ImageStyle> | undefined; //(Optional) Image Style Object
-  videoIconContainerStyle?: StyleProp<ViewStyle> | undefined; //(Optional) Video Icon Container Style
-  audioIconContainerStyle?: StyleProp<ViewStyle> | undefined; //(Optional) Video Icon Container Style
+  joinScreenContainerStyle?: StyleProp<ViewStyle>; // Join Screen Container Style
+  imageContainerStyle?: StyleProp<ViewStyle>; //(Optional) Image Container Style Object
+  imageStyle?: StyleProp<ImageStyle>; //(Optional) Image Style Object
+  videoIconContainerStyle?: StyleProp<ViewStyle>; //(Optional) Video Icon Container Style
+  audioIconContainerStyle?: StyleProp<ViewStyle>; //(Optional) Video Icon Container Style
   videoCallIcon?: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
   audioCallIcon?: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
-  audioCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Audio Icon Styling
-  videoCallIconStyle?: StyleProp<ImageStyle> | 'undefined'; //(Optional) Video Icon Styling
+  audioCallIconStyle?: StyleProp<ImageStyle>; //(Optional) Audio Icon Styling
+  videoCallIconStyle?: StyleProp<ImageStyle>; //(Optional) Video Icon Styling
   profileName: string; //Name of the Profile
   profileImage: any; //(Optional) Image URI OR Local location of the image (require keyword is required in case of local image)
-  callStatus: boolean; //status of call on recievers end
+  isCallActive: boolean; //status of call on recievers end
   onAudioCallPress: Function; //Generate audio Call token here
   onVideoCallPress: Function; //Generate Video Call token here
   onEndCall: Function; // Runs when the call is ended
-  type?: string; //container type of call 'audio' or 'video'
+  type: string; //container type of call 'audio' or 'video'
 }
 
 export default function Call(props: CallProps) {
@@ -199,7 +198,6 @@ export default function Call(props: CallProps) {
   };
 
   const _renderVideo = () => {
-    console.log('props.type', props.type == 'audio');
     return (
       <View style={styles.container}>
         {props.type == 'audio' ? (
@@ -268,18 +266,13 @@ export default function Call(props: CallProps) {
       showSnackBar(error.message);
     }
   };
-  console.log('remoteUid', props.type);
 
   return (
     <View style={styles.buttonsContainer}>
-      <Modal isVisible={props.callStatus} style={styles.modalView}>
+      <Modal isVisible={props.isCallActive} style={styles.modalView}>
         <View
-          style={{
-            flex: 1,
-            justifyContent: 'space-evenly',
-            backgroundColor: '#008DA9',
-          }}>
-          <View />
+          style={styles.incomingCallView}>
+
           <View style={styles.profileContainer}>
             <Image
               source={{uri: props?.profileImage}}
@@ -296,18 +289,18 @@ export default function Call(props: CallProps) {
               }`}</Text>
             </View>
           </View>
-          <View style={{flexDirection: 'row',justifyContent: 'space-evenly',}} >
-            <TouchableOpacity activeOpacity={0.8} onPress={_leaveChannel} style={{backgroundColor: '#EB5545', height: vw(60), width: vw(60), justifyContent: 'center',alignItems: 'center', borderRadius: vw(30), }} >
+          <View style={styles.callBottonContainer} >
+            <TouchableOpacity activeOpacity={0.8} onPress={_leaveChannel} style={styles.declineCall} >
               <Image source={localImages.END_CALL} style={styles.endcallIcon} />
             </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.8} onPress={props.type === 'audio' ? _joinAudioChannel : _joinVideoChannel} style={{backgroundColor: '#67CE67', height: vw(60), width: vw(60), justifyContent: 'center',alignItems: 'center', borderRadius: vw(30), }} >
-            <Image source={localImages.END_CALL} style={[styles.endcallIcon,{transform: [{rotate: '-135deg',}],}]} />
+            <TouchableOpacity activeOpacity={0.8} onPress={props.type === 'audio' ? _joinAudioChannel : _joinVideoChannel} style={styles.acceptCall} >
+            <Image source={localImages.END_CALL} style={[styles.endcallIcon,styles.rotate]} />
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
       <Modal
-        isVisible={props.callStatus ? isJoined : false}
+        isVisible={props.isCallActive ? isJoined : false}
         animationIn={'lightSpeedIn'}
         animationOut={'lightSpeedOut'}
         style={styles.modalView}>

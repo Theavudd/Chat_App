@@ -215,7 +215,7 @@ export default function Header(props: Props) {
           channelId: props.roomid,
           token: token,
         }}
-        callStatus={callStatus}
+        isCallActive={callStatus}
         type={type}
         onEndCall={onEndCall}
         onVideoCallPress={onVideoCallPress}
